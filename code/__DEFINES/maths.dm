@@ -257,3 +257,5 @@
 
 #define SI_COEFFICIENT "coefficient"
 #define SI_UNIT "unit"
+
+#define MAGNITUDE(a, b) (sqrt(a ** 2 + b ** 2))
