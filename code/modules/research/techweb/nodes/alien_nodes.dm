@@ -109,6 +109,12 @@ ABDUCTOR_SUBTYPE_UNLOCKS(/datum/techweb_node/alien_engi)
 	hidden = TRUE
 	announce_channels = list(RADIO_CHANNEL_MEDICAL)
 
+/datum/techweb_node/alien_surgery/New()
+	. = ..()
+	design_ids += list(
+		"surgery_ext_dissection",
+	)
+
 ABDUCTOR_SUBTYPE_UNLOCKS(/datum/techweb_node/alien_surgery)
 
 #undef ABDUCTOR_SUBTYPE_UNLOCKS

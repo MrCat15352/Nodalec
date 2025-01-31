@@ -381,3 +381,8 @@
 			unlink_experiment()
 		if("start_experiment_callback")
 			start_experiment_callback.Invoke(selected_experiment)
+
+/datum/component/experiment_handler/link_techweb(datum/techweb/new_web, forced)
+	if(!forced)
+		return
+	..()

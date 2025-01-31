@@ -113,6 +113,17 @@
 		connect_techweb(tool.buffer)
 		return ITEM_INTERACT_SUCCESS
 
+	if(stored_research && !QDELETED(tool.buffer) && istype(tool.buffer, /datum/techweb)) //disconnect old one
+		stored_research.connected_machines -= src
+	. = ..()
+	if(.)
+		stored_research.connected_machines += src //connect new one
+		say("Linked to Server!")
+		var/obj/machinery/rnd/production/production = src
+		if(istype(production))
+			production.update_designs()
+		return TRUE
+
 /obj/machinery/rnd/multitool_act_secondary(mob/living/user, obj/item/tool)
 	return multitool_act(user, tool)
 

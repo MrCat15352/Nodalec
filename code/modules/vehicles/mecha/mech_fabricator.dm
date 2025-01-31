@@ -93,10 +93,14 @@
 	)
 	update_menu_tech()
 
+// /obj/machinery/mecha_part_fabricator/multitool_act(mob/living/user, obj/item/multitool/tool)
+// 	if(!QDELETED(tool.buffer) && istype(tool.buffer, /datum/techweb))
+// 		connect_techweb(tool.buffer)
+// 	return TRUE
+
 /obj/machinery/mecha_part_fabricator/multitool_act(mob/living/user, obj/item/multitool/tool)
-	if(!QDELETED(tool.buffer) && istype(tool.buffer, /datum/techweb))
-		connect_techweb(tool.buffer)
-	return TRUE
+	. = ..()
+	on_techweb_update()
 
 /obj/machinery/mecha_part_fabricator/proc/on_techweb_update()
 	SIGNAL_HANDLER

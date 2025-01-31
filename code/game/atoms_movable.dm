@@ -134,6 +134,8 @@
 	/// Example: If req_one_access = list(ACCESS_ENGINE, ACCESS_CE)- then the user must have either ACCESS_ENGINE or ACCESS_CE in order to use the object.
 	var/list/req_one_access
 
+	var/can_be_z_moved = TRUE
+
 /mutable_appearance/emissive_blocker
 
 /mutable_appearance/emissive_blocker/New()

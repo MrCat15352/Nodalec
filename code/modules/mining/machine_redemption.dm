@@ -48,25 +48,27 @@
 	requires_silo = FALSE
 
 /obj/machinery/mineral/ore_redemption/Initialize(mapload)
-	. = ..()
-	if(!GLOB.autounlock_techwebs[/datum/techweb/autounlocking/smelter])
-		GLOB.autounlock_techwebs[/datum/techweb/autounlocking/smelter] = new /datum/techweb/autounlocking/smelter
-	stored_research = GLOB.autounlock_techwebs[/datum/techweb/autounlocking/smelter]
+	// . = ..()
+	// if(!GLOB.autounlock_techwebs[/datum/techweb/autounlocking/smelter])
+	// 	GLOB.autounlock_techwebs[/datum/techweb/autounlocking/smelter] = new /datum/techweb/autounlocking/smelter
+	// stored_research = GLOB.autounlock_techwebs[/datum/techweb/autounlocking/smelter]
 
-	//mat_container_signals is for reedeming points from local storage if silo is not required
-	var/list/local_signals = null
-	if(!requires_silo)
-		local_signals = list(
-			COMSIG_MATCONTAINER_ITEM_CONSUMED = TYPE_PROC_REF(/obj/machinery/mineral/ore_redemption, local_redeem_points)
-		)
-	materials = AddComponent( \
-		/datum/component/remote_materials, \
-		mapload, \
-		mat_container_signals = local_signals \
-	)
+	// //mat_container_signals is for reedeming points from local storage if silo is not required
+	// var/list/local_signals = null
+	// if(!requires_silo)
+	// 	local_signals = list(
+	// 		COMSIG_MATCONTAINER_ITEM_CONSUMED = TYPE_PROC_REF(/obj/machinery/mineral/ore_redemption, local_redeem_points)
+	// 	)
+	// materials = AddComponent( \
+	// 	/datum/component/remote_materials, \
+	// 	mapload, \
+	// 	mat_container_signals = local_signals \
+	// )
 
-	//for reedeming points from items inserted into ore silo
-	RegisterSignal(src, COMSIG_SILO_ITEM_CONSUMED, TYPE_PROC_REF(/obj/machinery/mineral/ore_redemption, silo_redeem_points))
+	// //for reedeming points from items inserted into ore silo
+	// RegisterSignal(src, COMSIG_SILO_ITEM_CONSUMED, TYPE_PROC_REF(/obj/machinery/mineral/ore_redemption, silo_redeem_points))
+	req_access = null
+	return ..()
 
 /obj/machinery/mineral/ore_redemption/Destroy()
 	stored_research = null

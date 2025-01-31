@@ -43,12 +43,27 @@
 		if(table && table.computer == src)
 			table.computer = null
 	QDEL_NULL(experiment_handler)
+	unsync_research_servers()
 	return ..()
 
+/obj/machinery/computer/operating/unsync_research_servers()
+	if(linked_techweb)
+		linked_techweb.connected_machines -= src
+		linked_techweb = null
+
 /obj/machinery/computer/operating/multitool_act(mob/living/user, obj/item/multitool/tool)
-	if(!QDELETED(tool.buffer) && istype(tool.buffer, /datum/techweb))
-		linked_techweb = tool.buffer
-	return TRUE
+	// if(!QDELETED(tool.buffer) && istype(tool.buffer, /datum/techweb))
+	// 	linked_techweb = tool.buffer
+	// return TRUE
+	if(linked_techweb && !QDELETED(tool.buffer) && istype(tool.buffer, /datum/techweb)) //disconnect old one
+		linked_techweb.connected_machines -= src
+		experiment_handler.unlink_techweb()
+	. = ..()
+	if(.)
+		linked_techweb.connected_machines += src //connect new one
+		experiment_handler.link_techweb(linked_techweb, TRUE)
+		say("Linked to Server!")
+		return TRUE
 
 /obj/machinery/computer/operating/attackby(obj/item/O, mob/user, params)
 	if(istype(O, /obj/item/disk/surgery))

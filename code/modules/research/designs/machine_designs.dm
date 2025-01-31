@@ -1357,3 +1357,6 @@
 		RND_CATEGORY_MACHINE + RND_SUBCATEGORY_MACHINE_CARGO
 	)
 	departmental_flags = DEPARTMENT_BITFLAG_CARGO | DEPARTMENT_BITFLAG_ENGINEERING
+
+/datum/design/board/rdserver
+	build_path = /obj/item/circuitboard/machine/rdserver/ship

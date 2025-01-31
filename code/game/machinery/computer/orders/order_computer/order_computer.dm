@@ -40,19 +40,21 @@ GLOBAL_LIST_EMPTY(order_console_products)
 	var/blackbox_key
 
 /obj/machinery/computer/order_console/Initialize(mapload)
-	. = ..()
-	radio = new(src)
-	radio.set_frequency(FREQ_SUPPLY)
-	radio.subspace_transmission = TRUE
-	radio.canhear_range = 0
-	radio.recalculateChannels()
+	// . = ..()
+	// radio = new(src)
+	// radio.set_frequency(FREQ_SUPPLY)
+	// radio.subspace_transmission = TRUE
+	// radio.canhear_range = 0
+	// radio.recalculateChannels()
 
-	if(GLOB.order_console_products.len)
-		return
-	for(var/datum/orderable_item/path as anything in subtypesof(/datum/orderable_item))
-		if(!initial(path.purchase_path))
-			continue
-		GLOB.order_console_products += new path
+	// if(GLOB.order_console_products.len)
+	// 	return
+	// for(var/datum/orderable_item/path as anything in subtypesof(/datum/orderable_item))
+	// 	if(!initial(path.purchase_path))
+	// 		continue
+	// 	GLOB.order_console_products += new path
+	forced_express = TRUE
+	return ..()
 
 /obj/machinery/computer/order_console/Destroy()
 	QDEL_NULL(radio)

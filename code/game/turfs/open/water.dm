@@ -78,6 +78,10 @@
 	baseturfs = /turf/open/water/beach
 	immerse_overlay_color = "#7799AA"
 	fishing_datum = /datum/fish_source/ocean/beach
+	color = COLOR_CYAN
+	light_range = 2
+	light_power = 0.80
+	light_color = LIGHT_COLOR_BLUE
 
 /turf/open/water/beach/Initialize(mapload)
 	. = ..()
@@ -92,6 +96,10 @@
 	base_icon_state = "tizira_water"
 	baseturfs = /turf/open/water/beach/tizira
 	fishing_datum = /datum/fish_source/tizira
+
+/turf/open/water/beach/deep
+	color = "#0099ff"
+	light_color = LIGHT_COLOR_DARK_BLUE
 
 /**
  * A special subtype of water with steam particles and a status effect similar to showers, that's however only applied if

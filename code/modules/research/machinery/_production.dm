@@ -50,6 +50,9 @@
 
 	update_icon(UPDATE_OVERLAYS)
 
+	charges_tax = FALSE
+	return ..()
+
 /obj/machinery/rnd/production/Destroy()
 	QDEL_NULL(print_sound)
 	materials = null
