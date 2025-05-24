@@ -231,9 +231,21 @@
 		// give the elevator a first floor
 		plat.master_datum.add_floor_landmarks(anchor_landmark, shaft_li - anchor_landmark)
 
-/datum/overmap/outpost/pre_docked(datum/overmap/ship/controlled/dock_requester)
+/datum/overmap/outpost/pre_docked(datum/overmap/ship/controlled/dock_requester, override_dock)
 	var/obj/docking_port/stationary/h_dock
 	var/datum/map_template/outpost/h_template = get_hangar_template(dock_requester.shuttle_port)
+
+	// [CELADON-ADD] - CELADON_COMPONENT - Pirates Update
+	if(dock_requester.source_template.category == "Pirates") //Проверка шипа на пиратскую фракцию
+		return new /datum/docking_ticket(_docking_error = "Docking request denied: Unauthorized ship") //Запрет пиратам на стыковку с аванпостом
+	// [/CELADON-ADD]
+
+	if(src in dock_requester.blacklisted)
+		return new /datum/docking_ticket(_docking_error = "Docking request denied: [dock_requester.blacklisted[src]]")
+
+	if(override_dock)
+		return new /datum/docking_ticket(override_dock, src, dock_requester)
+
 	if(!h_template || !length(shaft_datums))
 		return FALSE
 
@@ -244,40 +256,7 @@
 			"for ship [dock_requester] (template [dock_requester.source_template])!"
 		)
 		return FALSE
-
-	// [CELADON-ADD] - CELADON_COMPONENT - Pirates Update - NEEDS_TO_FIX_ALARM!
-	// if(dock_requester.get_faction() == "Pirates") //Проверка шипа на пиратскую фракцию
-	// 	return new /datum/docking_ticket(_docking_error = "Неавторизованным лицам отказано в стыковке с аванпостом.") //Запрет пиратам на стыковку с аванпостом
-	// [/CELADON-ADD]
-
-	if(src in dock_requester.blacklisted)
-		return new /datum/docking_ticket(_docking_error = "Docking request denied: [dock_requester.blacklisted[src]]")
-
-	adjust_dock_to_shuttle(h_dock, dock_requester.shuttle_port)
 	return new /datum/docking_ticket(h_dock, src, dock_requester)
-
-/datum/overmap/outpost/post_docked(datum/overmap/ship/controlled/dock_requester)
-	for(var/mob/M as anything in GLOB.player_list)
-		if(dock_requester.shuttle_port.is_in_shuttle_bounds(M))
-			M.play_screen_text("<span class='maptext' style=font-size:24pt;text-align:center valign='top'><u>[name]</u></span><br>[station_time_timestamp("hh:mm")]")
-
-	// Instance the virtual speaker for use in radio messages. It needs an atom to trace things back to; we use the token.
-	// You might think "but wait, can't we just keep one speaker around instead of instancing it for each fucking radio message?"
-	// You'd think so, but you can't. It gets deleted after sending the radio message. Because GOD FORBID you send a message over radio
-	// without creating a fucking ATOM first to give it a rubber fucking stamp.
-	// Using the token for the virtual speaker gives the message an appropriate name.
-	var/atom/movable/virtualspeaker/v_speaker = new(null, token, null)
-	var/datum/signal/subspace/vocal/signal = new(
-		dock_requester.shuttle_port.docked, // source: controls the physical space the message originates from. the docking port is in the mapzone so we use it
-		FREQ_COMMON, // frequency: Common
-		v_speaker, // speaker: a weird dummy atom not used for much of import but which will cause runtimes if omitted or improperly initialized.
-		/datum/language/galactic_common, // language: Common
-		"[dock_requester.name] confirmed touchdown at [dock_requester.shuttle_port.docked].", // the message itself
-		list(SPAN_ROBOT), // message font
-		list(MODE_CUSTOM_SAY_EMOTE = "coldly states") // custom say verb, consistent with robots
-	)
-	signal.send_to_receivers()
-	return
 
 // [CELADON-REMOVE] - CELADON_MASTER_FILES - Вырезано, так как создаёт рантаймы при удалении корабля через манипулятор
 /*

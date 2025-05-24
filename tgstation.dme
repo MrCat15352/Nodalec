@@ -9049,6 +9049,7 @@
 #include "nodalec\modules\shuttle\boards.dm"
 #include "nodalec\modules\shuttle\design.dm"
 #include "nodalec\modules\shuttle\emergency.dm"
+#include "nodalec\modules\shuttle\shuttle.dm"
 #include "nodalec\modules\shuttle\engine\electric.dm"
 #include "nodalec\modules\shuttle\engine\fuel.dm"
 #include "nodalec\modules\shuttle\engine\fueled_heater.dm"
