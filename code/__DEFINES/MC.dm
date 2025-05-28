@@ -1,3 +1,6 @@
+/// subsystem does not tick check, and should not run unless there is enough time (or its running behind (unless background))
+#define SS_NO_TICK_CHECK 8
+
 #define MC_TICK_CHECK ( ( TICK_USAGE > Master.current_ticklimit || src.state != SS_RUNNING ) ? pause() : 0 )
 
 #define MC_SPLIT_TICK_INIT(phase_count) var/original_tick_limit = Master.current_ticklimit; var/split_tick_phases = ##phase_count

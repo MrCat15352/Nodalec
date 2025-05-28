@@ -49,7 +49,7 @@
 			cached_map = parsed
 	return bounds
 
-/datum/map_template/proc/initTemplateBounds(list/bounds)
+/datum/map_template/proc/initTemplateBounds(list/bounds, init_atmos = TRUE)
 	if (!bounds) //something went wrong
 		stack_trace("[name] template failed to initialize correctly!")
 		return
@@ -59,6 +59,7 @@
 	var/list/atom/movable/movables = list()
 	var/list/obj/docking_port/stationary/ports = list()
 	var/list/area/areas = list()
+	var/list/atom/atoms = list()
 
 	var/list/turfs = block(
 		locate(
@@ -112,6 +113,9 @@
 	SSmachines.setup_template_powernets(cables)
 	SSair.setup_template_machinery(atmos_machines)
 
+	if(!init_atmos)
+		return
+
 	//calculate all turfs inside the border
 	var/list/template_and_bordering_turfs = block(
 		locate(
@@ -126,8 +130,11 @@
 			)
 		)
 	for(var/turf/affected_turf as anything in template_and_bordering_turfs)
+		affected_turf.blocks_air = initial(affected_turf.blocks_air)
 		affected_turf.air_update_turf(TRUE, TRUE)
 		affected_turf.levelupdate()
+		// placing ruins in after planet generation was causing mis-smooths. maybe there's a better fix? not sure
+		QUEUE_SMOOTH(affected_turf)
 
 /datum/map_template/proc/load_new_z(secret = FALSE)
 	var/x = round((world.maxx - width) * 0.5) + 1

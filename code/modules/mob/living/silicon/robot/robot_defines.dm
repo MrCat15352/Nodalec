@@ -86,6 +86,8 @@
 	var/sight_mode = 0
 	hud_possible = list(ANTAG_HUD, DIAG_STAT_HUD, DIAG_HUD, DIAG_BATT_HUD, DIAG_TRACK_HUD)
 
+	//3 Modules can be activated at any one time.
+	var/obj/item/robot_module/module = null
 
 	// Modules (tool slots)
 	var/obj/item/module_active = null

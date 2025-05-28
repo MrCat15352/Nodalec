@@ -249,3 +249,11 @@
 	for(var/zero in 1 to how_many_zeros)
 		zeros += "0"
 	return "[zeros][number]"
+
+// ADD-NODALEC
+/proc/invert_hex(hex)
+	var/length = length(hex)
+
+	var/num = hex2num(hex)
+
+	return num2hex((16 ** length) - 1 - num, length)

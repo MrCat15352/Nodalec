@@ -12,12 +12,7 @@ GLOBAL_LIST_INIT(achievements_unlocked, list())
 	var/json_file = file("[GLOB.log_directory]/round_end_data.json")
 	// All but npcs sublists and ghost category contain only mobs with minds
 	var/list/file_data = list("escapees" = list("humans" = list(), "silicons" = list(), "others" = list(), "npcs" = list()), "abandoned" = list("humans" = list(), "silicons" = list(), "others" = list(), "npcs" = list()), "ghosts" = list(), "additional data" = list())
-	var/num_survivors = 0 //Count of non-brain non-eye mobs with mind that are alive
-	var/num_escapees = 0 //Above and on centcom z
-	var/num_shuttle_escapees = 0 //Above and on escape shuttle
-	var/list/area/shuttle_areas
-	if(SSshuttle?.emergency)
-		shuttle_areas = SSshuttle.emergency.shuttle_areas
+	var/num_survivors = 0 //Count of non-brain non-camera mobs with mind that are alive
 
 	for(var/mob/M in GLOB.mob_list)
 		var/list/mob_data = list()
@@ -32,13 +27,8 @@ GLOBAL_LIST_INIT(achievements_unlocked, list())
 		if(M.mind)
 			count_only = FALSE
 			mob_data["ckey"] = M.mind.key
-			if(M.stat != DEAD && !isbrain(M) && !iseyemob(M))
+			if(M.stat != DEAD && !isbrain(M) && !iscameramob(M))
 				num_survivors++
-				if(EMERGENCY_ESCAPED_OR_ENDGAMED && (M.onCentCom() || M.onSyndieBase()))
-					num_escapees++
-					escape_status = "escapees"
-					if(shuttle_areas[get_area(M)])
-						num_shuttle_escapees++
 			if(isliving(M))
 				var/mob/living/L = M
 				mob_data["location"] = get_area(L)
@@ -47,7 +37,7 @@ GLOBAL_LIST_INIT(achievements_unlocked, list())
 					var/mob/living/carbon/human/H = L
 					category = "humans"
 					if(H.mind)
-						mob_data["job"] = H.mind.assigned_role.title
+						mob_data["job"] = H.mind.assigned_role
 					else
 						mob_data["job"] = "Unknown"
 					mob_data["species"] = H.dna.species.name
@@ -59,7 +49,7 @@ GLOBAL_LIST_INIT(achievements_unlocked, list())
 						mob_data["module"] = "pAI"
 					else if(iscyborg(L))
 						var/mob/living/silicon/robot/R = L
-						mob_data["module"] = (R.model ? R.model.name : "Null Model")
+						mob_data["module"] = R.module.name
 				else
 					category = "others"
 					mob_data["typepath"] = M.type
@@ -76,7 +66,7 @@ GLOBAL_LIST_INIT(achievements_unlocked, list())
 			var/name_to_use = initial(M.name)
 			if(ishuman(M))
 				name_to_use = "Unknown Human" //Monkeymen and other mindless corpses
-			if(npc_nest.Find(name_to_use))
+			if(name_to_use in npc_nest)
 				file_data["[escape_status]"]["npcs"][name_to_use] += 1
 			else
 				file_data["[escape_status]"]["npcs"][name_to_use] = 1
@@ -89,21 +79,13 @@ GLOBAL_LIST_INIT(achievements_unlocked, list())
 				var/pos = length(file_data["[escape_status]"]) + 1
 				file_data["[escape_status]"]["[pos]"] = mob_data
 
-	var/datum/station_state/end_state = new /datum/station_state()
-	end_state.count()
-	var/station_integrity = min(PERCENT(GLOB.start_state.score(end_state)), 100)
-	file_data["additional data"]["station integrity"] = station_integrity
 	WRITE_FILE(json_file, json_encode(file_data))
 
 	SSblackbox.record_feedback("nested tally", "round_end_stats", num_survivors, list("survivors", "total"))
-	SSblackbox.record_feedback("nested tally", "round_end_stats", num_escapees, list("escapees", "total"))
 	SSblackbox.record_feedback("nested tally", "round_end_stats", GLOB.joined_player_list.len, list("players", "total"))
 	SSblackbox.record_feedback("nested tally", "round_end_stats", GLOB.joined_player_list.len - num_survivors, list("players", "dead"))
 	. = list()
 	.[POPCOUNT_SURVIVORS] = num_survivors
-	.[POPCOUNT_ESCAPEES] = num_escapees
-	.[POPCOUNT_SHUTTLE_ESCAPEES] = num_shuttle_escapees
-	.["station_integrity"] = station_integrity
 
 /datum/controller/subsystem/ticker/proc/gather_antag_data()
 	var/team_gid = 1
@@ -342,21 +324,32 @@ GLOBAL_LIST_INIT(achievements_unlocked, list())
 
 /datum/controller/subsystem/ticker/proc/survivor_report(popcount)
 	var/list/parts = list()
-	var/station_evacuated = EMERGENCY_ESCAPED_OR_ENDGAMED
 
 	if(GLOB.round_id)
 		var/statspage = CONFIG_GET(string/roundstatsurl)
-		var/info = statspage ? "<a href='byond://?action=openLink&link=[url_encode(statspage)][GLOB.round_id]'>[GLOB.round_id]</a>" : GLOB.round_id
+		var/info = statspage ? "<a href='?action=openLink&link=[url_encode(statspage)][GLOB.round_id]'>[GLOB.round_id]</a>" : GLOB.round_id
 		parts += "[FOURSPACES]Round ID: <b>[info]</b>"
-	parts += "[FOURSPACES]Shift Duration: <B>[DisplayTimeText(world.time - SSticker.round_start_time)]</B>"
-	parts += "[FOURSPACES]Station Integrity: <B>[GLOB.station_was_nuked ? span_redtext("Destroyed") : "[popcount["station_integrity"]]%"]</B>"
+	parts += "[FOURSPACES]Shift Duration: <B>[DisplayTimeText(REALTIMEOFDAY - SSticker.round_start_timeofday)]</B>"
+	// [CELADON-EDIT] - Изменён вывод гринтекста на более правильный для последующего вывода в Discord.
+	// parts += "[FOURSPACES]Station Integrity: <B>[mode.station_was_nuked ? span_redtext("Destroyed") : "[popcount["station_integrity"]]%"]</B>"
+	parts += "<br><B>[FOURSPACES]Корабли: [length(SSovermap.controlled_ships)]</B>"
+	for(var/datum/overmap/ship/controlled/Ship as anything in SSovermap.controlled_ships)
+		if(Ship.source_template.short_name)
+			parts += "[FOURSPACES]<B>[Ship.source_template.short_name]-class [Ship.name]</B>"
+		else
+			parts += "[FOURSPACES]<B>SubShuttle: [Ship.name]</B>"
+		if(Ship.manifest && Ship.manifest.len >= 1)
+			parts += "[FOURSPACES]Капитан: <B>[Ship.manifest[1]]</B>"
+			parts += "[FOURSPACES]Количество экипажа: <B>[Ship.manifest.len]</B>"
+		else
+			parts += "[FOURSPACES]Капитан: <B>{Данные засекречены}</B>"
+		parts += "[FOURSPACES]Баланс: <B>[Ship.ship_account.account_balance] кредитов</B>"
+		parts += "[FOURSPACES]Местоположение: <B>X[Ship.x || Ship.docked_to.x]/Y[Ship.y || Ship.docked_to.y]</B><br>"
 	var/total_players = GLOB.joined_player_list.len
 	if(total_players)
 		parts+= "[FOURSPACES]Total Population: <B>[total_players]</B>"
-		if(station_evacuated)
-			parts += "<BR>[FOURSPACES]Evacuation Rate: <B>[popcount[POPCOUNT_ESCAPEES]] ([PERCENT(popcount[POPCOUNT_ESCAPEES]/total_players)]%)</B>"
-			parts += "[FOURSPACES](on emergency shuttle): <B>[popcount[POPCOUNT_SHUTTLE_ESCAPEES]] ([PERCENT(popcount[POPCOUNT_SHUTTLE_ESCAPEES]/total_players)]%)</B>"
-		parts += "[FOURSPACES]Survival Rate: <B>[popcount[POPCOUNT_SURVIVORS]] ([PERCENT(popcount[POPCOUNT_SURVIVORS]/total_players)]%)</B>"
+		parts += "[FOURSPACES]Survival Rate: <B>[PERCENT(popcount[POPCOUNT_SURVIVORS]/total_players)]%</B>"
+	// [/CELADON-EDIT]
 		if(SSblackbox.first_death)
 			var/list/ded = SSblackbox.first_death
 			if(ded.len)
@@ -364,17 +357,13 @@ GLOBAL_LIST_INIT(achievements_unlocked, list())
 			//ignore this comment, it fixes the broken sytax parsing caused by the " above
 			else
 				parts += "[FOURSPACES]<i>Nobody died this shift!</i>"
-
-	parts += "[FOURSPACES]Threat level: [SSdynamic.threat_level]"
-	parts += "[FOURSPACES]Threat left: [SSdynamic.mid_round_budget]"
-	if(SSdynamic.roundend_threat_log.len)
-		parts += "[FOURSPACES]Threat edits:"
-		for(var/entry as anything in SSdynamic.roundend_threat_log)
-			parts += "[FOURSPACES][FOURSPACES][entry]<BR>"
-	parts += "[FOURSPACES]Executed rules:"
-	for(var/datum/dynamic_ruleset/rule in SSdynamic.executed_rules)
-		parts += "[FOURSPACES][FOURSPACES][rule.ruletype] - <b>[rule.name]</b>: -[rule.cost + rule.scaled_times * rule.scaling_cost] threat"
-
+	if(istype(SSticker.mode, /datum/game_mode/dynamic))
+		var/datum/game_mode/dynamic/mode = SSticker.mode
+		parts += "[FOURSPACES]Threat level: [mode.threat_level]"
+		parts += "[FOURSPACES]Threat left: [mode.threat]"
+		parts += "[FOURSPACES]Executed rules:"
+		for(var/datum/dynamic_ruleset/rule in mode.executed_rules)
+			parts += "[FOURSPACES][FOURSPACES][rule.ruletype] - <b>[rule.name]</b>: -[rule.cost + rule.scaled_times * rule.scaling_cost] threat"
 	return parts.Join("<br>")
 
 /client/proc/roundend_report_file()

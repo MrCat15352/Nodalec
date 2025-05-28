@@ -24,7 +24,11 @@ SUBSYSTEM_DEF(overmap)
 	var/list/turf/radius_tiles = list()
 	/// List of all events
 	var/list/events = list()
-		///List of spawned outposts. The default spawn location is the first index.
+	///List of all overmap objects.
+	var/list/overmap_objects
+	///List of all simulated ships. All ships in this list are fully initialized.
+	var/list/controlled_ships
+	///List of spawned outposts. The default spawn location is the first index.
 	var/list/outposts
 
 	var/size = OVERMAP_SIZE
@@ -43,6 +47,9 @@ SUBSYSTEM_DEF(overmap)
 	var/datum/map_template/shuttle/voidcrew/initial_ship_template
 	var/obj/structure/overmap/ship/initial_ship
 
+	///Whether or not a ship is currently being spawned. Used to prevent multiple ships from being spawned at once.
+	var/ship_spawning //TODO: Make a proper queue for this
+
 /datum/controller/subsystem/overmap/Initialize(start_timeofday)
 	create_map()
 	setup_sun()
@@ -51,6 +58,13 @@ SUBSYSTEM_DEF(overmap)
 	spawn_initial_ship()
 
 	return SS_INIT_SUCCESS
+
+/datum/controller/subsystem/overmap/get_metrics()
+	. = ..()
+	var/list/cust = list()
+	cust["overmap_objects"] = length(overmap_objects)
+	cust["controlled_ships"] = length(controlled_ships)
+	.["custom"] = cust
 /*
  * Bluespace jump procs
  */
@@ -422,3 +436,21 @@ SUBSYSTEM_DEF(overmap)
 	secondary_dock.dwidth = 0
 
 	return list(mapzone, primary_dock, secondary_dock)
+
+/**
+ * Spawns a controlled ship with the passed template at the template's preferred spawn location.
+ * Intended for ship purchases, etc.
+ */
+/datum/controller/subsystem/overmap/proc/spawn_ship_at_start(datum/map_template/shuttle/template)
+	//Should never happen, but just in case. This'll delay the next spawn until the current one is done.
+	UNTIL(!ship_spawning)
+
+	var/ship_loc
+	if(template.space_spawn)
+		ship_loc = null
+	else
+		ship_loc = SSovermap.outposts[1]
+
+	ship_spawning = TRUE
+	. = new /datum/overmap/ship/controlled(ship_loc, template) //This statement SHOULDN'T runtime (not counting runtimes actually in the constructor) so ship_spawning should always be toggled.
+	ship_spawning = FALSE

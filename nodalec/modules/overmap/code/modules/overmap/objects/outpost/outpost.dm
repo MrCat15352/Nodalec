@@ -50,9 +50,9 @@
 	/// Our faction of the outpost
 	var/datum/faction/faction
 
-/datum/overmap/proc/Initialize(position, ...)
-	PROTECTED_PROC(TRUE)
-	return
+// /datum/overmap/proc/Initialize(position, ...)
+// 	PROTECTED_PROC(TRUE)
+// 	return
 
 
 // !!! ЭТОТ ПРОК ЗАКОМЕНТИРОВАН ЧТОБ В ТЕКУЩЕМ СОСТОЯНИИ РАБОТАЛО ТО ЧТО ВЫШЕ !!!
@@ -231,21 +231,9 @@
 		// give the elevator a first floor
 		plat.master_datum.add_floor_landmarks(anchor_landmark, shaft_li - anchor_landmark)
 
-/datum/overmap/outpost/pre_docked(datum/overmap/ship/controlled/dock_requester, override_dock)
+/datum/overmap/outpost/pre_docked(datum/overmap/ship/controlled/dock_requester)
 	var/obj/docking_port/stationary/h_dock
 	var/datum/map_template/outpost/h_template = get_hangar_template(dock_requester.shuttle_port)
-
-	// [CELADON-ADD] - CELADON_COMPONENT - Pirates Update
-	if(dock_requester.source_template.category == "Pirates") //Проверка шипа на пиратскую фракцию
-		return new /datum/docking_ticket(_docking_error = "Docking request denied: Unauthorized ship") //Запрет пиратам на стыковку с аванпостом
-	// [/CELADON-ADD]
-
-	if(src in dock_requester.blacklisted)
-		return new /datum/docking_ticket(_docking_error = "Docking request denied: [dock_requester.blacklisted[src]]")
-
-	if(override_dock)
-		return new /datum/docking_ticket(override_dock, src, dock_requester)
-
 	if(!h_template || !length(shaft_datums))
 		return FALSE
 
@@ -256,6 +244,16 @@
 			"for ship [dock_requester] (template [dock_requester.source_template])!"
 		)
 		return FALSE
+
+	// [CELADON-ADD] - CELADON_COMPONENT - Pirates Update - NEEDS_TO_FIX_ALARM!
+	// if(dock_requester.get_faction() == "Pirates") //Проверка шипа на пиратскую фракцию
+	// 	return new /datum/docking_ticket(_docking_error = "Неавторизованным лицам отказано в стыковке с аванпостом.") //Запрет пиратам на стыковку с аванпостом
+	// [/CELADON-ADD]
+
+	if(src in dock_requester.blacklisted)
+		return new /datum/docking_ticket(_docking_error = "Docking request denied: [dock_requester.blacklisted[src]]")
+
+	adjust_dock_to_shuttle(h_dock, dock_requester.shuttle_port)
 	return new /datum/docking_ticket(h_dock, src, dock_requester)
 
 // [CELADON-REMOVE] - CELADON_MASTER_FILES - Вырезано, так как создаёт рантаймы при удалении корабля через манипулятор
@@ -409,48 +407,48 @@
 		shaft_elevator = _elevator
 
 
-/datum/overmap/outpost/proc/make_hangar(obj/docking_port/mobile/request_port)
-	// DEBUG: move this up to /datum/overmap/outpost
-	var/hangar_skin = "test"
+// /datum/overmap/outpost/proc/make_hangar(obj/docking_port/mobile/request_port)
+// 	// DEBUG: move this up to /datum/overmap/outpost
+// 	var/hangar_skin = "test"
 
-	var/r_width = CEILING(request_port.width, 20)
-	var/r_height = CEILING(request_port.height, 20)
-	// pack the port bounds in descending order
-	var/list/round_size = r_width > r_height ? list(r_width, r_height) : list(r_height, r_width)
+// 	var/r_width = CEILING(request_port.width, 20)
+// 	var/r_height = CEILING(request_port.height, 20)
+// 	// pack the port bounds in descending order
+// 	var/list/round_size = r_width > r_height ? list(r_width, r_height) : list(r_height, r_width)
 
-	// caps the dimensions according to the reserve dock defines. each dimension rolls the nearest multiple of 20 into itself
-	// so if the max long size is, say, 89, then the possible dock sizes go (20, 40, 60, 89), omitting the 80
-	// this helps keep the # of hangar maps reasonable
-	round_size[1] = round_size[1] < round(RESERVE_DOCK_MAX_SIZE_LONG, 20) ? round_size[1] : RESERVE_DOCK_MAX_SIZE_LONG
-	round_size[2] = round_size[2] < round(RESERVE_DOCK_MAX_SIZE_SHORT, 20) ? round_size[2] : RESERVE_DOCK_MAX_SIZE_SHORT
+// 	// caps the dimensions according to the reserve dock defines. each dimension rolls the nearest multiple of 20 into itself
+// 	// so if the max long size is, say, 89, then the possible dock sizes go (20, 40, 60, 89), omitting the 80
+// 	// this helps keep the # of hangar maps reasonable
+// 	round_size[1] = round_size[1] < round(RESERVE_DOCK_MAX_SIZE_LONG, 20) ? round_size[1] : RESERVE_DOCK_MAX_SIZE_LONG
+// 	round_size[2] = round_size[2] < round(RESERVE_DOCK_MAX_SIZE_SHORT, 20) ? round_size[2] : RESERVE_DOCK_MAX_SIZE_SHORT
 
-	var/map_string = "hangar_[hangar_skin]_[round_size[1]]x[round_size[2]]"
-	var/datum/map_template/hangar/hangar_template = SSmapping.hangar_templates[map_string]
-	if(!hangar_template)
-		CRASH("[src] ([src.type]) could not find the hangar [map_string] for [request_port]!")
+// 	var/map_string = "hangar_[hangar_skin]_[round_size[1]]x[round_size[2]]"
+// 	var/datum/map_template/hangar/hangar_template = SSmapping.hangar_templates[map_string]
+// 	if(!hangar_template)
+// 		CRASH("[src] ([src.type]) could not find the hangar [map_string] for [request_port]!")
 
-	var/encounter_name = "Dynamic Overmap Encounter" // DEBUG: make this more descriptive?
-	var/datum/map_zone/mapzone = SSmapping.create_map_zone(encounter_name)
-	// DEBUG: decide on the ZTRAIT to use; consider teleportation exploits
-	var/datum/virtual_level/vlevel = SSmapping.create_virtual_level(encounter_name, list(ZTRAIT_STATION = TRUE), mapzone, hangar_template.width+2, hangar_template.height+2)
-	vlevel.reserve_margin(1)
+// 	var/encounter_name = "Dynamic Overmap Encounter" // DEBUG: make this more descriptive?
+// 	var/datum/map_zone/mapzone = SSmapping.create_map_zone(encounter_name)
+// 	// DEBUG: decide on the ZTRAIT to use; consider teleportation exploits
+// 	var/datum/virtual_level/vlevel = SSmapping.create_virtual_level(encounter_name, list(ZTRAIT_STATION = TRUE), mapzone, hangar_template.width+2, hangar_template.height+2)
+// 	vlevel.reserve_margin(1)
 
-	hangar_template.load(vlevel.get_unreserved_bottom_left_turf())
-	var/turf/dock_turf
-	for(var/obj/dock_mark as anything in GLOB.hangar_dock_landmarks)
-		if(vlevel.is_in_bounds(dock_mark))
-			dock_turf = dock_mark.loc
-			qdel(dock_mark, TRUE)
-			break
-	if(!dock_turf)
-		CRASH("[src] ([src.type]) could not find a hangar docking port landmark for its spawned hangar [map_string]!")
+// 	hangar_template.load(vlevel.get_unreserved_bottom_left_turf())
+// 	var/turf/dock_turf
+// 	for(var/obj/dock_mark as anything in GLOB.hangar_dock_landmarks)
+// 		if(vlevel.is_in_bounds(dock_mark))
+// 			dock_turf = dock_mark.loc
+// 			qdel(dock_mark, TRUE)
+// 			break
+// 	if(!dock_turf)
+// 		CRASH("[src] ([src.type]) could not find a hangar docking port landmark for its spawned hangar [map_string]!")
 
-	var/obj/docking_port/stationary/hangar_dock = new(dock_turf)
-	hangar_dock.dir = NORTH
-	hangar_dock.name = "\improper [src.name] Hangar #Whatever" // DEBUG: make this more informative
-	hangar_dock.height = round_size[2] // hangar ports are wider than they are tall
-	hangar_dock.width = round_size[1]
-	return list(mapzone, hangar_dock)
+// 	var/obj/docking_port/stationary/hangar_dock = new(dock_turf)
+// 	hangar_dock.dir = NORTH
+// 	hangar_dock.name = "\improper [src.name] Hangar #Whatever" // DEBUG: make this more informative
+// 	hangar_dock.height = round_size[2] // hangar ports are wider than they are tall
+// 	hangar_dock.width = round_size[1]
+// 	return list(mapzone, hangar_dock)
 
 // DEBUG: move out of here, maybe?
 GLOBAL_LIST_EMPTY(hangar_dock_landmarks)

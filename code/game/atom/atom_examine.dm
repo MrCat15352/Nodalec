@@ -9,7 +9,8 @@
 
 /mob/living/silicon/robot
 	examine_thats = "This is"
-
+	name = "Default"
+	var/list/modules = list() //holds all the usable modules
 /**
  * Called when a mob examines this atom: [/mob/verb/examinate]
  *

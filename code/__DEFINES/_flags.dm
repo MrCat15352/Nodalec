@@ -194,7 +194,7 @@ GLOBAL_LIST_INIT(bitflags, list(1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 204
 #define UPSIDE_DOWN (1<<5)
 
 /// Combination flag for movetypes which, for all intents and purposes, mean the mob is not touching the ground
-#define MOVETYPES_NOT_TOUCHING_GROUND (FLYING|FLOATING|UPSIDE_DOWN)
+#define MOVETYPES_NOT_TOUCHING_GROUND (FLYING | FLOATING | UPSIDE_DOWN)
 
 //Fire and Acid stuff, for resistance_flags
 #define LAVA_PROOF (1<<0)
@@ -214,6 +214,10 @@ GLOBAL_LIST_INIT(bitflags, list(1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 204
 #define FREEZE_PROOF (1<<7)
 /// can't be shuttle crushed.
 #define SHUTTLE_CRUSH_PROOF (1<<8)
+/// Should this object not be destroyed when a shuttle lands on it?
+#define LANDING_PROOF (1<<9)
+/// Should this object be able to be in hyperspace without being deleted?
+#define HYPERSPACE_PROOF (1<<10)
 
 //tesla_zap
 #define ZAP_MACHINE_EXPLOSIVE (1<<0)
@@ -331,3 +335,12 @@ GLOBAL_LIST_INIT(bitflags, list(1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 204
 #define EMOTE_IMPORTANT (1<<2)
 /// Emote only prints to runechat, not to the chat window
 #define EMOTE_RUNECHAT (1<<3)
+
+//turf-only flags
+#define NOJAUNT_1 (1<<0)
+/// If a turf can be made dirty at roundstart. This is also used in areas.
+#define CAN_BE_DIRTY_1 (1<<1)
+/// Blocks lava rivers being generated on the turf
+#define NO_LAVA_GEN_1 (1<<3)
+/// Blocks ruins spawning on the turf
+#define NO_RUINS_1 (1<<4)

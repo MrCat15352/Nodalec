@@ -57,6 +57,17 @@
 /// The amount of lumcount on a tile for it to be considered dark (used to determine reading and nyctophobia)
 #define LIGHTING_TILE_IS_DARK 0.2
 
+//lighting area defines
+/// dynamic lighting disabled (area stays at full brightness)
+#define DYNAMIC_LIGHTING_DISABLED 0
+/// dynamic lighting enabled
+#define DYNAMIC_LIGHTING_ENABLED 1
+/// dynamic lighting enabled even if the area doesn't require power
+#define DYNAMIC_LIGHTING_FORCED 2
+/// dynamic lighting enabled only if starlight is.
+#define DYNAMIC_LIGHTING_IFSTARLIGHT 3
+#define IS_DYNAMIC_LIGHTING(A) A.dynamic_lighting
+
 //code assumes higher numbers override lower numbers.
 #define LIGHTING_NO_UPDATE 0
 #define LIGHTING_VIS_UPDATE 1

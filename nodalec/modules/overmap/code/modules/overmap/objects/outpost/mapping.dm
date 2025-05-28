@@ -57,4 +57,5 @@ GLOBAL_LIST_EMPTY(outpost_landmarks)
 // they get overwritten in LateInitialize. I had to do this instead. Eventually somebody will rewrite light fixture code.
 /obj/machinery/light/floor/hangar/LateInitialize()
 	. = ..()
+	SHOULD_NOT_OVERRIDE(TRUE)
 	brightness = 20
