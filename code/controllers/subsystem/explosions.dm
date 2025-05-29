@@ -576,14 +576,14 @@ ADMIN_VERB(check_bomb_impacts, R_DEBUG, "Check Bomb Impact", "See what the effec
 				base_shake_amount = max(base_shake_amount, quake_factor * 3, 0) // Devastating explosions rock the station and ground
 				shake_camera(listener, FAR_SHAKE_DURATION, min(base_shake_amount, FAR_SHAKE_CAP))
 
-		else if(!isspaceturf(listener_turf) && !(!(epicenter_area.type in GLOB.the_station_areas) && SSmapping.is_planetary()) && echo_factor) // Big enough explosions echo through the hull. Except on planetary maps if the epicenter is not on the station's area.
-			var/echo_volume
-			if(quake_factor)
-				echo_volume = 60
-				shake_camera(listener, FAR_SHAKE_DURATION, clamp(quake_factor / 4, 0, FAR_SHAKE_CAP))
-			else
-				echo_volume = 40
-			listener.playsound_local(epicenter, null, echo_volume, TRUE, frequency, sound_to_use = echo_sound, distance_multiplier = 0)
+		// else if(!isspaceturf(listener_turf) && !(!(epicenter_area.type in GLOB.the_station_areas) && SSmapping.is_planetary()) && echo_factor) // Big enough explosions echo through the hull. Except on planetary maps if the epicenter is not on the station's area.
+		// 	var/echo_volume
+		// 	if(quake_factor)
+		// 		echo_volume = 60
+		// 		shake_camera(listener, FAR_SHAKE_DURATION, clamp(quake_factor / 4, 0, FAR_SHAKE_CAP))
+		// 	else
+		// 		echo_volume = 40
+		// 	listener.playsound_local(epicenter, null, echo_volume, TRUE, frequency, sound_to_use = echo_sound, distance_multiplier = 0)	// ANC - починить надо
 
 		if(creaking) // 5 seconds after the bang, the station begins to creak
 			addtimer(CALLBACK(listener, TYPE_PROC_REF(/mob, playsound_local), epicenter, null, rand(FREQ_LOWER, FREQ_UPPER), TRUE, frequency, null, null, FALSE, hull_creaking_sound, 0), CREAK_DELAY)

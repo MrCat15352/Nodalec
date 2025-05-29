@@ -1186,13 +1186,13 @@ GLOBAL_REAL_VAR(list/stack_trace_storage)
 // 	. = view(range, GLOB.dview_mob)
 // 	GLOB.dview_mob.loc = null
 
-/mob/dview
-	name = "INTERNAL DVIEW MOB"
-	invisibility = 101
-	density = FALSE
-	see_in_dark = 1e6
-	move_resist = INFINITY
-	var/ready_to_die = FALSE
+// /mob/dview
+// 	name = "INTERNAL DVIEW MOB"
+// 	invisibility = 101
+// 	density = FALSE
+// 	see_in_dark = 1e6
+// 	move_resist = INFINITY
+// 	var/ready_to_die = FALSE
 
 /mob/dview/Initialize() //Properly prevents this mob from gaining huds or joining any global lists
 	SHOULD_CALL_PARENT(FALSE)
@@ -1210,9 +1210,9 @@ GLOBAL_REAL_VAR(list/stack_trace_storage)
 	return ..()
 
 
-// #define FOR_DVIEW(type, range, center, invis_flags) \
-// 	GLOB.dview_mob.loc = center;           \
-// 	GLOB.dview_mob.see_invisible = invis_flags; \
+// #define FOR_DVIEW(type, range, center, invis_flags)
+// 	GLOB.dview_mob.loc = center;
+// 	GLOB.dview_mob.see_invisible = invis_flags;
 // 	for(type in view(range, GLOB.dview_mob))
 
 // #define FOR_DVIEW_END GLOB.dview_mob.loc = null

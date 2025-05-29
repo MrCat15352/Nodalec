@@ -90,12 +90,12 @@
  * centered = TRUE counts from turf center to turf center \
  * of course mathematically this is just adding world.icon_size on again
 **/
-/proc/get_pixel_distance(atom/start, atom/end, centered = TRUE)
-	if(!istype(start) || !istype(end))
-		return 0
-	. = bounds_dist(start, end) + sqrt((((start.pixel_x + end.pixel_x) ** 2) + ((start.pixel_y + end.pixel_y) ** 2)))
-	if(centered)
-		. += ICON_SIZE_ALL
+// /proc/get_pixel_distance(atom/start, atom/end, centered = TRUE)	// ALARM_NODALEC -> сокращаем до ANC! - Короче вагабонд менял это
+// 	if(!istype(start) || !istype(end))
+// 		return 0
+// 	. = bounds_dist(start, end) + sqrt((((start.pixel_x + end.pixel_x) ** 2) + ((start.pixel_y + end.pixel_y) ** 2)))
+// 	if(centered)
+// 		. += ICON_SIZE_ALL
 
 /**
  * Check if there is already a wall item on the turf loc

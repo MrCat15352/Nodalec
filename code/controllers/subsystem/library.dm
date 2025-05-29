@@ -58,7 +58,8 @@ SUBSYSTEM_DEF(library)
 			printable_posters[initial(poster_type.name)] = poster_type
 
 /datum/controller/subsystem/library/proc/prepare_library_areas()
-	library_areas = typesof(/area/station/service/library) - /area/station/service/library/abandoned
-	var/list/additional_areas = SSmapping.current_map.library_areas
-	if(additional_areas)
-		library_areas += additional_areas
+	return	// ANC - вернул
+	// library_areas = typesof(/area/station/service/library) - /area/station/service/library/abandoned
+	// var/list/additional_areas = SSmapping.current_map.library_areas
+	// if(additional_areas)
+	// 	library_areas += additional_areas
