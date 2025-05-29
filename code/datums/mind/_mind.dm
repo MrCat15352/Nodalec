@@ -103,6 +103,9 @@
 	/// A list to keep track of which books a person has read (to prevent people from reading the same book again and again for positive mood events)
 	var/list/book_titles_read
 
+	/// A weakref to the /datum/overmap/ship/controlled the original mob spawned on
+	var/datum/weakref/original_ship
+
 /datum/mind/New(_key)
 	key = _key
 	init_known_skills()

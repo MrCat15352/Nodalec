@@ -306,3 +306,10 @@ ADMIN_VERB(create_or_modify_area, R_DEBUG, "Create Or Modify Area", "Create of m
 		message_admins("Admin login: [key_name(src)]")
 		return
 
+/proc/message_debug(msg)
+	log_world("DEBUG: [msg]")
+	msg = "<span class=\"admindebug\"><span class=\"prefix\">DEBUG:</span> <span class=\"message linkify\">[msg]</span></span>"
+	to_chat(GLOB.admins,
+		type = MESSAGE_TYPE_DEBUG,
+		html = msg,
+		confidential = TRUE)

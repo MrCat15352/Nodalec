@@ -349,10 +349,10 @@ Turf and target are separate in case you want to teleport some distance from a t
 	return turf_list
 
 ///Returns a random turf on the station
-/proc/get_random_station_turf()
-	var/list/turfs = get_area_turfs(pick(GLOB.the_station_areas))
-	if (length(turfs))
-		return pick(turfs)
+// /proc/get_random_station_turf()
+// 	var/list/turfs = get_area_turfs(pick(GLOB.the_station_areas))
+// 	if (length(turfs))
+// 		return pick(turfs)
 
 ///Returns a random turf on the station, excludes dense turfs (like walls) and areas that have valid_territory set to FALSE
 /proc/get_safe_random_station_turf(list/areas_to_pick_from = GLOB.the_station_areas)
@@ -377,33 +377,33 @@ Turf and target are separate in case you want to teleport some distance from a t
 			return target
 
 ///Returns a random department of areas to pass into get_safe_random_station_turf() for more equal spawning.
-/proc/get_safe_random_station_turf_equal_weight()
-	// Big list of departments, each with lists of each area subtype.
-	var/static/list/department_areas
-	if(isnull(department_areas))
-		department_areas = list(
-				subtypesof(/area/station/engineering), \
-				subtypesof(/area/station/medical), \
-				subtypesof(/area/station/science), \
-				subtypesof(/area/station/security), \
-				subtypesof(/area/station/service), \
-				subtypesof(/area/station/command), \
-				subtypesof(/area/station/hallway), \
-				subtypesof(/area/station/ai_monitored), \
-				subtypesof(/area/station/cargo)
-			)
+// /proc/get_safe_random_station_turf_equal_weight()
+// 	// Big list of departments, each with lists of each area subtype.
+// 	var/static/list/department_areas
+// 	if(isnull(department_areas))
+// 		department_areas = list(
+// 				subtypesof(/area/station/engineering), \
+// 				subtypesof(/area/station/medical), \
+// 				subtypesof(/area/station/science), \
+// 				subtypesof(/area/station/security), \
+// 				subtypesof(/area/station/service), \
+// 				subtypesof(/area/station/command), \
+// 				subtypesof(/area/station/hallway), \
+// 				subtypesof(/area/station/ai_monitored), \
+// 				subtypesof(/area/station/cargo)
+// 			)
 
-	var/list/area/final_department = pick(department_areas) // Pick a department
-	var/list/area/final_area_list = list()
+// 	var/list/area/final_department = pick(department_areas) // Pick a department
+// 	var/list/area/final_area_list = list()
 
-	for(var/area/checked_area as anything in final_department) // Check each area to make sure it exists on the station
-		if(checked_area in GLOB.the_station_areas)
-			final_area_list += checked_area
+// 	for(var/area/checked_area as anything in final_department) // Check each area to make sure it exists on the station
+// 		if(checked_area in GLOB.the_station_areas)
+// 			final_area_list += checked_area
 
-	if(!final_area_list.len) // Failsafe
-		return get_safe_random_station_turf()
+// 	if(!final_area_list.len) // Failsafe
+// 		return get_safe_random_station_turf()
 
-	return get_safe_random_station_turf(final_area_list)
+// 	return get_safe_random_station_turf(final_area_list)
 
 /**
  * Checks whether the target turf is in a valid state to accept a directional construction

@@ -50,6 +50,7 @@
 /// Used to indicate no gravity
 #define ZERO_GRAVITY 0
 #define STANDARD_GRAVITY 1 //Anything above this is high gravity, anything below no grav until negative gravity
+#define GAS_GIANT_GRAVITY 2
 /// The gravity strength threshold for high gravity damage.
 #define GRAVITY_DAMAGE_THRESHOLD 3
 /// The scaling factor for high gravity damage.

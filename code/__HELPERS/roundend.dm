@@ -49,7 +49,7 @@ GLOBAL_LIST_INIT(achievements_unlocked, list())
 						mob_data["module"] = "pAI"
 					else if(iscyborg(L))
 						var/mob/living/silicon/robot/R = L
-						mob_data["module"] = R.module.name
+						mob_data["module"] = R.model.name
 				else
 					category = "others"
 					mob_data["typepath"] = M.type
@@ -227,7 +227,7 @@ GLOBAL_LIST_INIT(achievements_unlocked, list())
 	*/
 
 	//Set news report and mode result
-	SSdynamic.set_round_result()
+	// SSdynamic.set_round_result()
 
 	to_chat(world, span_infoplain(span_big(span_bold("<BR><BR><BR>The round has ended."))))
 	log_game("The round has ended.")
@@ -357,13 +357,13 @@ GLOBAL_LIST_INIT(achievements_unlocked, list())
 			//ignore this comment, it fixes the broken sytax parsing caused by the " above
 			else
 				parts += "[FOURSPACES]<i>Nobody died this shift!</i>"
-	if(istype(SSticker.mode, /datum/game_mode/dynamic))
-		var/datum/game_mode/dynamic/mode = SSticker.mode
-		parts += "[FOURSPACES]Threat level: [mode.threat_level]"
-		parts += "[FOURSPACES]Threat left: [mode.threat]"
-		parts += "[FOURSPACES]Executed rules:"
-		for(var/datum/dynamic_ruleset/rule in mode.executed_rules)
-			parts += "[FOURSPACES][FOURSPACES][rule.ruletype] - <b>[rule.name]</b>: -[rule.cost + rule.scaled_times * rule.scaling_cost] threat"
+	// if(istype(SSticker.mode, /datum/game_mode/dynamic))
+	// 	var/datum/game_mode/dynamic/mode = SSticker.mode
+	// 	parts += "[FOURSPACES]Threat level: [mode.threat_level]"
+	// 	parts += "[FOURSPACES]Threat left: [mode.threat]"
+	// 	parts += "[FOURSPACES]Executed rules:"
+	// 	for(var/datum/dynamic_ruleset/rule in mode.executed_rules)
+	// 		parts += "[FOURSPACES][FOURSPACES][rule.ruletype] - <b>[rule.name]</b>: -[rule.cost + rule.scaled_times * rule.scaling_cost] threat"
 	return parts.Join("<br>")
 
 /client/proc/roundend_report_file()
@@ -420,21 +420,16 @@ GLOBAL_LIST_INIT(achievements_unlocked, list())
 	var/list/parts = list()
 	var/mob/M = C.mob
 	if(M.mind && !isnewplayer(M))
+		var/datum/overmap/ship/controlled/original_ship = M.mind.original_ship?.resolve()
+		var/location = original_ship ? "aboard [original_ship]" : "in [station_name()]"
 		if(M.stat != DEAD && !isbrain(M))
-			if(EMERGENCY_ESCAPED_OR_ENDGAMED)
-				if(!M.onCentCom() && !M.onSyndieBase())
-					parts += "<div class='panel stationborder'>"
-					parts += "<span class='marooned'>You managed to survive, but were marooned on [station_name()]...</span>"
-				else
-					parts += "<div class='panel greenborder'>"
-					parts += span_greentext("You managed to survive the events on [station_name()] as [M.real_name].")
-			else
-				parts += "<div class='panel greenborder'>"
-				parts += span_greentext("You managed to survive the events on [station_name()] as [M.real_name].")
+			parts += "<div class='panel greenborder'>"
+			parts += span_greentext("You managed to survive the events [location] as [M.real_name].")
 
 		else
 			parts += "<div class='panel redborder'>"
-			parts += span_redtext("You did not survive the events on [station_name()]...")
+			parts += span_redtext("You did not survive the events [location]...")
+
 	else
 		parts += "<div class='panel stationborder'>"
 	parts += "<br>"

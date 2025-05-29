@@ -44,9 +44,9 @@
 		// Always assume Lavaland / mining level is a planet. (Astroid mining crying right now)
 		return TRUE
 
-	if(is_station_level(what_turf.z))
-		// Station levels rely on the map config, I.E. Icebox is planetary but Meta is not
-		return SSmapping.is_planetary()
+	// if(is_station_level(what_turf.z))
+	// 	// Station levels rely on the map config, I.E. Icebox is planetary but Meta is not
+	// 	return SSmapping.is_planetary()
 
 	if(is_centcom_level(what_turf.z))
 		// Central Command is definitely in space

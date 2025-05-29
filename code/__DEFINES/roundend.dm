@@ -37,3 +37,9 @@
 #define SUPERMATTER_CASCADE 21
 /// The emergency shuttle was successfully hijacked
 #define SHUTTLE_HIJACK 24
+
+// Anonymous names defines (used in the secrets panel)
+
+#define ANON_DISABLED "" //so it's falsey
+#define ANON_RANDOMNAMES "Random Default"
+#define ANON_EMPLOYEENAMES "Employees"
