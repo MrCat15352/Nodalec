@@ -6,13 +6,16 @@ SUBSYSTEM_DEF(npcpool)
 
 	var/list/currentrun = list()
 
+	var/failed_fires
+	var/has_screamed
+
 /datum/controller/subsystem/npcpool/stat_entry(msg)
 	var/list/activelist = GLOB.simple_animals[AI_ON]
-	msg = "NPCS:[length(activelist)]"
+	msg = "NPCS:[length(activelist)][has_screamed ? "| !!NULL SAFETY TRIPPED!!" : null]"
 	return ..()
 
 /datum/controller/subsystem/npcpool/fire(resumed = FALSE)
-
+	++failed_fires
 	if (!resumed)
 		var/list/activelist = GLOB.simple_animals[AI_ON]
 		src.currentrun = activelist.Copy()
@@ -24,12 +27,16 @@ SUBSYSTEM_DEF(npcpool)
 		var/mob/living/simple_animal/SA = currentrun[currentrun.len]
 		--currentrun.len
 
-		if (QDELETED(SA)) // Some issue causes nulls to get into this list some times. This keeps it running, but the bug is still there.
-			GLOB.simple_animals[AI_ON] -= SA
-			stack_trace("Found a null in simple_animals active list [SA.type]!")
-			continue
+		//I hate doing this but it prevents nulls in either currentrun or the simple_animals list from paralyzing the controller. Probably shouldn't be merged.
+		if(failed_fires > 5 || has_screamed)
+			if(!has_screamed)
+				has_screamed = 1
+				message_admins(span_danger("SSnpcpool has failed to fire at least 5 times. The subsystem has been placed into a more permissive mode. Call a coder!"))
+				stack_trace("SSnpcpool has started ignoring nulls. Something is wrong with GLOB.simple_animals\[1]")
+			if(QDELETED(SA))
+				continue
 
-		if(!SA.ckey && !HAS_TRAIT(SA, TRAIT_NO_TRANSFORM))
+		if(!SA.ckey && !SA.notransform)
 			if(SA.stat != DEAD)
 				SA.handle_automated_movement()
 			if(SA.stat != DEAD)
@@ -37,4 +44,6 @@ SUBSYSTEM_DEF(npcpool)
 			if(SA.stat != DEAD)
 				SA.handle_automated_speech()
 		if (MC_TICK_CHECK)
+			--failed_fires
 			return
+	--failed_fires

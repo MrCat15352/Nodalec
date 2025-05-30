@@ -1,4 +1,3 @@
-/* NOVA EDIT REMOVAL
 SUBSYSTEM_DEF(title)
 	name = "Title Screen"
 	flags = SS_NO_FIRE
@@ -12,7 +11,7 @@ SUBSYSTEM_DEF(title)
 
 /datum/controller/subsystem/title/Initialize()
 	if(file_path && icon)
-		return SS_INIT_SUCCESS
+		return
 
 	if(fexists("data/previous_title.dat"))
 		var/previous_path = file2text("data/previous_title.dat")
@@ -26,24 +25,25 @@ SUBSYSTEM_DEF(title)
 
 	for(var/S in provisional_title_screens)
 		var/list/L = splittext(S,"+")
-		if((L.len == 1 && (L[1] != "exclude" && L[1] != "blank.png")) || (L.len > 1 && ((use_rare_screens && LOWER_TEXT(L[1]) == "rare") || (LOWER_TEXT(L[1]) == LOWER_TEXT(SSmapping.current_map.map_name)))))
+		if((L.len == 1 && (L[1] != "exclude" && L[1] != "blank.png"))|| (L.len > 1 && ((use_rare_screens && lowertext(L[1]) == "rare"))))
 			title_screens += S
 
 	if(length(title_screens))
 		file_path = "[global.config.directory]/title_screens/images/[pick(title_screens)]"
 
 	if(!file_path)
-		file_path = "icons/runtime/default_title.dmi"
-
+//[CELADON-EDIT]- MUSIC_CELADON
+		//file_path = "icons/runtime/default_title.dmi"//CELADON-EDIT-ORIGINAL
+		file_path = "mod_celadon/_storge_icons/icons/default_title.dmi"
+//[/CELADON-EDIT]
 	ASSERT(fexists(file_path))
 
 	icon = new(fcopy_rsc(file_path))
 
 	if(splash_turf)
 		splash_turf.icon = icon
-		splash_turf.handle_generic_titlescreen_sizes()
 
-	return SS_INIT_SUCCESS
+	return ..()
 
 /datum/controller/subsystem/title/vv_edit_var(var_name, var_value)
 	. = ..()
@@ -61,7 +61,7 @@ SUBSYSTEM_DEF(title)
 	for(var/thing in GLOB.clients)
 		if(!thing)
 			continue
-		var/atom/movable/screen/splash/S = new(null, thing, FALSE)
+		var/atom/movable/screen/splash/S = new(thing, FALSE)
 		S.Fade(FALSE,FALSE)
 
 /datum/controller/subsystem/title/Recover()
@@ -69,4 +69,3 @@ SUBSYSTEM_DEF(title)
 	splash_turf = SStitle.splash_turf
 	file_path = SStitle.file_path
 	previous_icon = SStitle.previous_icon
-*/

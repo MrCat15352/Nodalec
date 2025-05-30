@@ -239,10 +239,7 @@
 
 	h_dock = ensure_hangar(h_template)
 	if(!h_dock)
-		stack_trace(
-			"Outpost [src] ([src.type]) [REF(src)] unable to create hangar [h_template] " +\
-			"for ship [dock_requester] (template [dock_requester.source_template])!"
-		)
+		stack_trace("Outpost [src] ([src.type]) [REF(src)] unable to create hangar [h_template] for ship [dock_requester] (template [dock_requester.source_template])!")
 		return FALSE
 
 	// [CELADON-ADD] - CELADON_COMPONENT - Pirates Update - NEEDS_TO_FIX_ALARM!

@@ -1,4 +1,4 @@
-//Used to process objects.
+//Used to process objects. Fires once every second.
 
 SUBSYSTEM_DEF(processing)
 	name = "Processing"
@@ -13,6 +13,12 @@ SUBSYSTEM_DEF(processing)
 /datum/controller/subsystem/processing/stat_entry(msg)
 	msg = "[stat_tag]:[length(processing)]"
 	return ..()
+
+/datum/controller/subsystem/processing/get_metrics()
+	. = ..()
+	var/list/cust = list()
+	cust["processing"] = length(processing)
+	.["custom"] = cust
 
 /datum/controller/subsystem/processing/fire(resumed = FALSE)
 	if (!resumed)
@@ -31,7 +37,6 @@ SUBSYSTEM_DEF(processing)
 		if (MC_TICK_CHECK)
 			return
 
-
 /**
  * This proc is called on a datum on every "cycle" if it is being processed by a subsystem. The time between each cycle is determined by the subsystem's "wait" setting.
  * You can start and stop processing a datum using the START_PROCESSING and STOP_PROCESSING defines.
@@ -45,6 +50,7 @@ SUBSYSTEM_DEF(processing)
  *
  * If you override this do not call parent, as it will return PROCESS_KILL. This is done to prevent objects that dont override process() from staying in the processing list
  */
+
 /datum/proc/process(seconds_per_tick)
-	set waitfor = FALSE
+	set waitfor = 0
 	return PROCESS_KILL

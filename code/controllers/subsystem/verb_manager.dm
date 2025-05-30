@@ -8,15 +8,15 @@
  * plus TICK_BYOND_RESERVE from the tick and uses up to that amount of time (minus the percentage of the tick used by the time it executes subsystems)
  * on subsystems running cool things like atmospherics or Life or SSInput or whatever.
  *
- * Without this subsystem, verbs are likely to cause overtime if the MC uses all of the time it has allotted for itself in the tick, and SendMaps
+ * Without this subsystem, verbs are likely to cause overtime if the MC uses all of the time it has alloted for itself in the tick, and SendMaps
  * uses as much as its expected to, and an expensive verb ends up executing that tick. This is because the MC is completely blind to the cost of
  * verbs, it can't account for it at all. The only chance for verbs to not cause overtime in a tick where the MC used as much of the tick
- * as it allotted itself and where SendMaps costed as much as it was expected to is if the verb(s) take less than TICK_BYOND_RESERVE percent of
- * the tick, which isn't much. Not to mention if SendMaps takes more than 30% of the tick and the MC forces itself to take at least 70% of the
+ * as it alloted itself and where SendMaps costed as much as it was expected to is if the verb(s) take less than TICK_BYOND_RESERVE percent of
+ * the tick, which isnt much. Not to mention if SendMaps takes more than 30% of the tick and the MC forces itself to take at least 70% of the
  * normal tick duration which causes ticks to naturally overrun even in the absence of verbs.
  *
  * With this subsystem, the MC can account for the cost of verbs and thus stop major overruns of ticks. This means that the most important subsystems
- * like SSinput can start at the same time they were supposed to, leading to a smoother experience for the player since ticks aren't riddled with
+ * like SSinput can start at the same time they were supposed to, leading to a smoother experience for the player since ticks arent riddled with
  * minor hangs over and over again.
  */
 SUBSYSTEM_DEF(verb_manager)
@@ -24,7 +24,7 @@ SUBSYSTEM_DEF(verb_manager)
 	wait = 1
 	flags = SS_TICKER | SS_NO_INIT
 	priority = FIRE_PRIORITY_DELAYED_VERBS
-	runlevels = RUNLEVEL_LOBBY | RUNLEVELS_DEFAULT
+	runlevels = RUNLEVEL_INIT | RUNLEVELS_DEFAULT
 
 	///list of callbacks to procs called from verbs or verblike procs that were executed when the server was overloaded and had to delay to the next tick.
 	///this list is ran through every tick, and the subsystem does not yield until this queue is finished.
@@ -36,17 +36,17 @@ SUBSYSTEM_DEF(verb_manager)
 	///if TRUE we treat usr's with holders just like usr's without holders. otherwise they always execute immediately
 	var/can_queue_admin_verbs = FALSE
 
-	///if this is true all verbs immediately execute and don't queue. in case the mc is fucked or something
+	///if this is true all verbs immediately execute and dont queue. in case the mc is fucked or something
 	var/FOR_ADMINS_IF_VERBS_FUCKED_immediately_execute_all_verbs = FALSE
 
 	///used for subtypes to determine if they use their own stats for the stat entry
 	var/use_default_stats = TRUE
 
 	///if TRUE this will... message admins every time a verb is queued to this subsystem for the next tick with stats.
-	///for obvious reasons don't make this be TRUE on the code level this is for admins to turn on
+	///for obvious reasons dont make this be TRUE on the code level this is for admins to turn on
 	var/message_admins_on_queue = FALSE
 
-	///always queue if possible. overrides can_queue_admin_verbs but not FOR_ADMINS_IF_VERBS_FUCKED_immediately_execute_all_verbs
+	///always queue if possible. overides can_queue_admin_verbs but not FOR_ADMINS_IF_VERBS_FUCKED_immediately_execute_all_verbs
 	var/always_queue = FALSE
 
 /**
@@ -81,16 +81,14 @@ SUBSYSTEM_DEF(verb_manager)
 #ifdef UNIT_TESTS
 	if(QDELETED(usr) && ismob(incoming_callback.object))
 		incoming_callback.user = WEAKREF(incoming_callback.object)
-		var/datum/callback/new_us = CALLBACK(arglist(list(GLOBAL_PROC, GLOBAL_PROC_REF(_queue_verb)) + args.Copy()))
+		var/datum/callback/new_us = CALLBACK(arglist(list(GLOBAL_PROC, /proc/_queue_verb) + args.Copy()))
 		return world.push_usr(incoming_callback.object, new_us)
-
-#else
-
-	if(QDELETED(usr) || isnull(usr.client))
-		stack_trace("_queue_verb() returned false because it wasn't called from player input!")
-		return FALSE
-
 #endif
+
+	//debatable whether this is needed, this is just to try and ensure that you dont use this to queue stuff that isnt from player input.
+	if(QDELETED(usr))
+		stack_trace("_queue_verb() returned false because it wasnt called from player input!")
+		return FALSE
 
 	if(!istype(subsystem_to_use))
 		stack_trace("_queue_verb() returned false because it was given an invalid subsystem to queue for!")

@@ -4,7 +4,6 @@
  * Pretty much pokes the MC to make sure it's still alive.
  **/
 
-// See initialization order in /code/game/world.dm
 GLOBAL_REAL(Failsafe, /datum/controller/failsafe)
 
 /datum/controller/failsafe // This thing pretty much just keeps poking the master controller
@@ -16,7 +15,7 @@ GLOBAL_REAL(Failsafe, /datum/controller/failsafe)
 	// The alert level. For every failed poke, we drop a DEFCON level. Once we hit DEFCON 1, restart the MC.
 	var/defcon = 5
 	//the world.time of the last check, so the mc can restart US if we hang.
-	// (Real friends look out for *each other*)
+	//	(Real friends look out for *eachother*)
 	var/lasttick = 0
 
 	// Track the MC iteration to make sure its still on track.
@@ -24,9 +23,6 @@ GLOBAL_REAL(Failsafe, /datum/controller/failsafe)
 	var/running = TRUE
 
 /datum/controller/failsafe/New()
-	// Ensure usr is null, to prevent any potential weirdness resulting from the failsafe having a usr if it's manually restarted.
-	usr = null
-
 	// Highlander-style: there can only be one! Kill off the old and replace it with the new.
 	if(Failsafe != src)
 		if(istype(Failsafe))
@@ -35,7 +31,7 @@ GLOBAL_REAL(Failsafe, /datum/controller/failsafe)
 	Initialize()
 
 /datum/controller/failsafe/Initialize()
-	set waitfor = FALSE
+	set waitfor = 0
 	Failsafe.Loop()
 	if (!Master || defcon == 0) //Master is gone/not responding and Failsafe just exited its loop
 		defcon = 3 //Reset defcon level as its used inside the emergency loop
@@ -45,7 +41,7 @@ GLOBAL_REAL(Failsafe, /datum/controller/failsafe)
 				break
 			else if (defcon == 1) //Exit Failsafe if we weren't able to recover the MC in the last stage
 				log_game("FailSafe: Failed to recover MC while in emergency state. Failsafe exiting.")
-				message_admins(span_boldannounce("Failsafe failed critically while trying to recreate broken MC. Please manually fix the MC or reboot the server. Failsafe exiting now."))
+				message_admins(span_boldannounce("Failsafe failed criticaly while trying to recreate broken MC. Please manually fix the MC or reboot the server. Failsafe exiting now."))
 				message_admins(span_boldannounce("You can try manually calling these two procs:."))
 				message_admins(span_boldannounce("/proc/recover_all_SS_and_recreate_master: Most stuff should still function but expect instability/runtimes/broken stuff."))
 				message_admins(span_boldannounce("/proc/delete_all_SS_and_recreate_master: Most stuff will be broken but basic stuff like movement and chat should still work."))
@@ -152,7 +148,7 @@ GLOBAL_REAL(Failsafe, /datum/controller/failsafe)
 /proc/recover_all_SS_and_recreate_master()
 	del(Master)
 	var/list/subsytem_types = subtypesof(/datum/controller/subsystem)
-	sortTim(subsytem_types, GLOBAL_PROC_REF(cmp_subsystem_init))
+	sortTim(subsytem_types, /proc/cmp_subsystem_init)
 	for(var/I in subsytem_types)
 		new I
 	. = Recreate_MC()

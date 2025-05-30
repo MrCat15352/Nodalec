@@ -9,7 +9,7 @@ SUBSYSTEM_DEF(vis_overlays)
 
 /datum/controller/subsystem/vis_overlays/Initialize()
 	vis_overlay_cache = list()
-	return SS_INIT_SUCCESS
+	return ..()
 
 /datum/controller/subsystem/vis_overlays/fire(resumed = FALSE)
 	if(!resumed)
@@ -28,7 +28,7 @@ SUBSYSTEM_DEF(vis_overlays)
 		if(MC_TICK_CHECK)
 			return
 
-//the "thing" var can be anything with vis_contents which includes images - in the future someone should totally allow vis overlays to be passed in as an arg instead of all this bullshit
+//the "thing" var can be anything with vis_contents which includes images
 /datum/controller/subsystem/vis_overlays/proc/add_vis_overlay(atom/movable/thing, icon, iconstate, layer, plane, dir, alpha = 255, add_appearance_flags = NONE, unique = FALSE)
 	var/obj/effect/overlay/vis/overlay
 	if(!unique)
@@ -45,16 +45,18 @@ SUBSYSTEM_DEF(vis_overlays)
 		var/cache_id = "[text_ref(overlay)]@{[world.time]}"
 		vis_overlay_cache[cache_id] = overlay
 		. = overlay
-	thing.vis_contents += overlay
+	if(overlay == null)
+		message_debug("Somehow someway we generated a null vis_overlay! ([thing.type]|[icon]|[iconstate])")
+	else
+		thing.vis_contents += overlay
 
 	if(!isatom(thing)) // Automatic rotation is not supported on non atoms
-		return overlay
+		return
 
 	if(!thing.managed_vis_overlays)
 		thing.managed_vis_overlays = list(overlay)
 	else
 		thing.managed_vis_overlays += overlay
-	return overlay
 
 /datum/controller/subsystem/vis_overlays/proc/_create_new_vis_overlay(icon, iconstate, layer, plane, dir, alpha, add_appearance_flags)
 	var/obj/effect/overlay/vis/overlay = new

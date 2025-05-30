@@ -8,7 +8,7 @@ VERB_MANAGER_SUBSYSTEM_DEF(input)
 
 	use_default_stats = FALSE
 
-	var/list/macro_set
+	var/list/macro_sets
 
 	///running average of how many clicks inputted by a player the server processes every second. used for the subsystem stat entry
 	var/clicks_per_second = 0
@@ -19,7 +19,7 @@ VERB_MANAGER_SUBSYSTEM_DEF(input)
 	///running average of how many movement iterations from player input the server processes every second. used for the subsystem stat entry
 	var/movements_per_second = 0
 	///running average of the amount of real time clicks take to truly execute after the command is originally sent to the server.
-	///if a click isn't delayed at all then it counts as 0 deciseconds.
+	///if a click isnt delayed at all then it counts as 0 deciseconds.
 	var/average_click_delay = 0
 
 /datum/controller/subsystem/verb_manager/input/Initialize()
@@ -29,17 +29,74 @@ VERB_MANAGER_SUBSYSTEM_DEF(input)
 
 	refresh_client_macro_sets()
 
-	return SS_INIT_SUCCESS
+	return ..()
 
-// This is for when macro sets are eventually datumized
+// This is for when macro sets are eventualy datumized
 /datum/controller/subsystem/verb_manager/input/proc/setup_default_macro_sets()
-	macro_set = list(
-	"Any" = "\"KeyDown \[\[*\]\]\"",
-	"Any+UP" = "\"KeyUp \[\[*\]\]\"",
-	"Back" = "\".winset \\\"input.text=\\\"\\\"\\\"\"",
-	"Tab" = "\".winset \\\"input.focus=true?map.focus=true:input.focus=true\\\"\"",
-	"Escape" = "Open-Escape-Menu",
-	)
+	var/list/static/default_macro_sets
+
+	if(default_macro_sets)
+		macro_sets = default_macro_sets
+		return
+
+	default_macro_sets = list(
+		"default" = list( //Locked Any. Reduced tab support. [Hotkey]
+			"Tab" = "\".winset \\\"input.focus=true ? map.focus=true : input.focus=true\\\"\"",
+			"Back" = "\".winset \\\"input.text=\\\"\\\"\\\"\"", // This makes it so backspace can remove default inputs
+			"Any" = "\"KeyDown \[\[*\]\]\"",
+			"Any+UP" = "\"KeyUp \[\[*\]\]\"",
+			"Escape" = "Reset-Held-Keys",
+			),
+		"old_default" = list( //Unlocked Bar. Respects oldmode_keys whitelist. Full tab support. [Default]
+			"Tab" = "\".winset \\\"mainwindow.macro=old_hotkeys map.focus=true\\\"\"",
+			"Ctrl+Escape" = "Reset-Held-Keys", //Small concession for the safety net.
+			),
+		"old_hotkeys" = list( //Unlocked Any. Supports clean switch back to unlocked. [Default]
+			"Tab" = "\".winset \\\"mainwindow.macro=old_default input.focus=true\\\"\"",
+			"Back" = "\".winset \\\"input.text=\\\"\\\"\\\"\"", // This makes it so backspace can remove default inputs
+			"Any" = "\"KeyDown \[\[*\]\]\"",
+			"Any+UP" = "\"KeyUp \[\[*\]\]\"",
+			"Escape" = "Reset-Held-Keys",
+			),
+		)
+
+	// Because i'm lazy and don't want to type all these out twice
+	var/list/old_default = default_macro_sets["old_default"]
+
+	var/list/static/oldmode_keys = list(
+		"North", "East", "South", "West",
+		"Northeast", "Southeast", "Northwest", "Southwest",
+		"Insert", "Delete", "Ctrl", "Alt",
+		"F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12",
+		)
+
+	for(var/i in 1 to oldmode_keys.len)
+		var/key = oldmode_keys[i]
+		old_default[key] = "\"KeyDown [key]\""
+		old_default["[key]+UP"] = "\"KeyUp [key]\""
+
+	var/list/static/oldmode_ctrl_override_keys = list(
+		"W" = "W", "A" = "A", "S" = "S", "D" = "D", // movement
+		"1" = "1", "2" = "2", "3" = "3", "4" = "4", // intent
+		"B" = "B", // resist
+		"E" = "E", // quick equip
+		"F" = "F", // intent left
+		"G" = "G", // intent right
+		"H" = "H", // stop pulling
+		"Q" = "Q", // drop
+		"R" = "R", // throw
+		"X" = "X", // switch hands
+		"Y" = "Y", // activate item
+		"Z" = "Z", // activate item
+		)
+
+	for(var/i in 1 to oldmode_ctrl_override_keys.len)
+		var/key = oldmode_ctrl_override_keys[i]
+		var/override = oldmode_ctrl_override_keys[key]
+		old_default["Ctrl+[key]"] = "\"KeyDown [override]\""
+		old_default["Ctrl+[key]+UP"] = "\"KeyUp [override]\""
+
+	macro_sets = default_macro_sets
 
 // Badmins just wanna have fun ♪
 /datum/controller/subsystem/verb_manager/input/proc/refresh_client_macro_sets()
@@ -69,20 +126,20 @@ VERB_MANAGER_SUBSYSTEM_DEF(input)
 	..()
 
 	var/moves_this_run = 0
-	for(var/mob/user in GLOB.keyloop_list)
+	for(var/mob/user as anything in GLOB.keyloop_list)
 		moves_this_run += user.focus?.keyLoop(user.client)//only increments if a player moves due to their own input
 
 	movements_per_second = MC_AVG_SECONDS(movements_per_second, moves_this_run, wait TICKS)
 
 /datum/controller/subsystem/verb_manager/input/run_verb_queue()
-	var/deferred_clicks_this_run = 0 //acts like current_clicks but doesn't count clicks that don't get processed by SSinput
+	var/deferred_clicks_this_run = 0 //acts like current_clicks but doesnt count clicks that dont get processed by SSinput
 
 	for(var/datum/callback/verb_callback/queued_click as anything in verb_queue)
 		if(!istype(queued_click))
 			stack_trace("non /datum/callback/verb_callback instance inside SSinput's verb_queue!")
 			continue
 
-		average_click_delay = MC_AVG_FAST_UP_SLOW_DOWN(average_click_delay, TICKS2DS((DS2TICKS(world.time) - queued_click.creation_time)))
+		average_click_delay = MC_AVG_FAST_UP_SLOW_DOWN(average_click_delay, TICKS2DS((DS2TICKS(world.time) - queued_click.creation_time)) SECONDS)
 		queued_click.InvokeAsync()
 
 		current_clicks++

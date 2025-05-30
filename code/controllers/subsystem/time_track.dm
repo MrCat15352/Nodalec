@@ -1,6 +1,7 @@
 SUBSYSTEM_DEF(time_track)
 	name = "Time Tracking"
 	wait = 100
+	flags = SS_NO_TICK_CHECK
 	init_order = INIT_ORDER_TIMETRACK
 	runlevels = RUNLEVEL_LOBBY | RUNLEVELS_DEFAULT
 
@@ -15,6 +16,7 @@ SUBSYSTEM_DEF(time_track)
 	var/last_tick_realtime = 0
 	var/last_tick_byond_time = 0
 	var/last_tick_tickcount = 0
+#ifdef SENDMAPS_PROFILE
 	var/list/sendmaps_names_map = list(
 		"SendMaps" = "send_maps",
 		"SendMaps: Initial housekeeping" = "initial_house",
@@ -40,15 +42,19 @@ SUBSYSTEM_DEF(time_track)
 		"SendMaps: Per client: Map data: Look for movable changes: Loop through turfs in range" = "turfs_in_range",
 		"SendMaps: Per client: Map data: Look for movable changes: Movables examined" = "movables_examined",
 	)
+#endif
 
-/datum/controller/subsystem/time_track/Initialize()
-	GLOB.perf_log = "[GLOB.log_directory]/perf-[GLOB.round_id ? GLOB.round_id : "NULL"]-[SSmapping.current_map.map_name].csv"
+/datum/controller/subsystem/time_track/Initialize(start_timeofday)
+	. = ..()
+	GLOB.perf_log = "[GLOB.log_directory]/perf-[GLOB.round_id ? GLOB.round_id : "NULL"].csv"
+#ifdef SENDMAPS_PROFILE
 	world.Profile(PROFILE_RESTART, type = "sendmaps")
 	//Need to do the sendmaps stuff in its own file, since it works different then everything else
-	var/list/sendmaps_headers = list()
+	var/list/sendmaps_shorthands = list()
 	for(var/proper_name in sendmaps_names_map)
-		sendmaps_headers += sendmaps_names_map[proper_name]
-		sendmaps_headers += "[sendmaps_names_map[proper_name]]_count"
+		sendmaps_shorthands += sendmaps_names_map[proper_name]
+		sendmaps_shorthands += "[sendmaps_names_map[proper_name]]_count"
+#endif
 	log_perf(
 		list(
 			"time",
@@ -66,18 +72,19 @@ SUBSYSTEM_DEF(time_track)
 			"air_superconductivity_cost",
 			"air_pipenets_cost",
 			"air_rebuilds_cost",
-			"air_turf_count",
-			"air_eg_count",
+			"air_equalize_cost",
 			"air_hotspot_count",
 			"air_network_count",
 			"air_delta_count",
-			"air_superconductive_count",
-			"all_queries",
-			"queries_active",
-			"queries_standby"
-		) + sendmaps_headers
+			"air_high_pressure_turfs",
+			"air_low_pressure_turfs",
+			"air_gasmix_count"
+#ifdef SENDMAPS_PROFILE
+		) + sendmaps_shorthands
+#else
+		)
+#endif
 	)
-	return SS_INIT_SUCCESS
 
 /datum/controller/subsystem/time_track/fire()
 
@@ -100,30 +107,21 @@ SUBSYSTEM_DEF(time_track)
 	last_tick_byond_time = current_byondtime
 	last_tick_tickcount = current_tickcount
 
+#ifdef SENDMAPS_PROFILE
 	var/sendmaps_json = world.Profile(PROFILE_REFRESH, type = "sendmaps", format="json")
-	var/list/send_maps_data = null
-	try
-		send_maps_data = json_decode(sendmaps_json)
-	catch
-		text2file(sendmaps_json,"bad_sendmaps.json")
-		can_fire = FALSE
-		return
-	var/send_maps_sort = send_maps_data.Copy() //Doing it like this guarantees us a properly sorted list
+	var/list/send_maps_data = json_decode(sendmaps_json)
+	var/send_maps_sort = send_maps_data.Copy() //Doing it like this guarentees us a properly sorted list
 
 	for(var/list/packet in send_maps_data)
 		send_maps_sort[packet["name"]] = packet
 
 	var/list/send_maps_values = list()
-	for(var/entry_name in sendmaps_names_map)
-		var/list/packet = send_maps_sort[entry_name]
-		if(!packet) //If the entry does not have a value for us, just put in 0 for both
-			send_maps_values += 0
-			send_maps_values += 0
-			continue
+	for(var/list/packet in send_maps_sort)
 		send_maps_values += packet["value"]
 		send_maps_values += packet["calls"]
+#endif
 
-	SSblackbox.record_feedback("associative", "time_dilation_current", 1, list("[ISOtime()]" = list("current" = "[time_dilation_current]", "avg_fast" = "[time_dilation_avg_fast]", "avg" = "[time_dilation_avg]", "avg_slow" = "[time_dilation_avg_slow]")))
+	SSblackbox.record_feedback("associative", "time_dilation_current", 1, list("[SQLtime()]" = list("current" = "[time_dilation_current]", "avg_fast" = "[time_dilation_avg_fast]", "avg" = "[time_dilation_avg]", "avg_slow" = "[time_dilation_avg_slow]")))
 	log_perf(
 		list(
 			world.time,
@@ -141,16 +139,27 @@ SUBSYSTEM_DEF(time_track)
 			SSair.cost_superconductivity,
 			SSair.cost_pipenets,
 			SSair.cost_rebuilds,
-			length(SSair.active_turfs),
-			length(SSair.excited_groups),
+			SSair.cost_equalize,
 			length(SSair.hotspots),
 			length(SSair.networks),
 			length(SSair.high_pressure_delta),
-			length(SSair.active_super_conductivity),
-			SSdbcore.all_queries_num,
-			SSdbcore.queries_active_num,
-			SSdbcore.queries_standby_num
+			SSair.high_pressure_turfs,
+			SSair.low_pressure_turfs,
+#ifdef SENDMAPS_PROFILE
 		) + send_maps_values
+#else
+		)
+#endif
 	)
 
-	SSdbcore.reset_tracking()
+#ifdef SENDMAPS_PROFILE
+/datum/controller/subsystem/time_track/proc/scream_maptick_data()
+	var/current_profile_data = world.Profile(PROFILE_REFRESH, type = "sendmaps", format="json")
+	log_world(current_profile_data)
+	current_profile_data = json_decode(current_profile_data)
+	var/output = ""
+	for(var/list/entry in current_profile_data)
+		output += "[entry["name"]],[entry["value"]],[entry["calls"]]\n"
+	log_world(output)
+	return output
+#endif
