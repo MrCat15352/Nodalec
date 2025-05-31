@@ -164,9 +164,9 @@
  * * minimum_required_security_level: The minimum required security level to run the game in which the DMAPI is integrated. Can be one of [TGS_SECURITY_ULTRASAFE], [TGS_SECURITY_SAFE], or [TGS_SECURITY_TRUSTED].
  * * http_handler - Optional user defined [/datum/tgs_http_handler].
  */
-/world/proc/TgsNew(datum/tgs_event_handler/event_handler, minimum_required_security_level = TGS_SECURITY_ULTRASAFE, datum/tgs_http_handler/http_handler)
-	CAN_BE_REDEFINED(TRUE)
-	return
+// /world/proc/TgsNew(datum/tgs_event_handler/event_handler, minimum_required_security_level = TGS_SECURITY_ULTRASAFE, datum/tgs_http_handler/http_handler)	//ANC - дубликат
+// 	CAN_BE_REDEFINED(TRUE)
+// 	return
 
 /**
  * Consumers MUST call this when world initializations are complete and the game is ready to play before any player interactions happen.
@@ -175,17 +175,17 @@
  * Afterwards, consider explicitly setting it to what you want to avoid this BYOND bug: http://www.byond.com/forum/post/2575184
  * This function should not be called before ..() in [/world/proc/New].
  */
-/world/proc/TgsInitializationComplete()
-	CAN_BE_REDEFINED(TRUE)
-	return
+// /world/proc/TgsInitializationComplete()	//ANC - дубликат
+// 	CAN_BE_REDEFINED(TRUE)
+// 	return
 
 /// Consumers MUST run this macro at the start of [/world/proc/Topic].
 #define TGS_TOPIC var/tgs_topic_return = TgsTopic(args[1]); if(tgs_topic_return) return tgs_topic_return
 
 /// Consumers MUST call this as late as possible in [world/proc/Reboot] (BEFORE ..()).
-/world/proc/TgsReboot()
-	CAN_BE_REDEFINED(TRUE)
-	return
+// /world/proc/TgsReboot()	//ANC - дубликат
+// 	CAN_BE_REDEFINED(TRUE)
+// 	return
 
 // DATUM DEFINITIONS
 // All datums defined here should be considered read-only
@@ -221,18 +221,18 @@
 /**
  * Returns [TRUE]/[FALSE] based on if the [/datum/tgs_version] contains wildcards.
  */
-/datum/tgs_version/proc/Wildcard()
-	CAN_BE_REDEFINED(TRUE)
-	return
+// /datum/tgs_version/proc/Wildcard()	//ANC - дубликат
+// 	CAN_BE_REDEFINED(TRUE)
+// 	return
 
 /**
  * Returns [TRUE]/[FALSE] based on if the [/datum/tgs_version] equals some other version.
  *
  * other_version - The [/datum/tgs_version] to compare against.
  */
-/datum/tgs_version/proc/Equals(datum/tgs_version/other_version)
-	CAN_BE_REDEFINED(TRUE)
-	return
+// /datum/tgs_version/proc/Equals(datum/tgs_version/other_version)	//ANC - дубликат
+// 	CAN_BE_REDEFINED(TRUE)
+// 	return
 
 /// Represents a merge of a GitHub pull request.
 /datum/tgs_revision_information/test_merge
@@ -289,9 +289,9 @@
  *
  * event_code - One of the TGS_EVENT_ defines. Extra parameters will be documented in each.
  */
-/datum/tgs_event_handler/proc/HandleEvent(event_code, ...)
-	set waitfor = FALSE
-	return
+// /datum/tgs_event_handler/proc/HandleEvent(event_code, ...)	//ANC - дубликат
+// 	set waitfor = FALSE
+// 	return
 
 /// User definable handler for HTTP calls. This abstract version MUST be overridden to be used.
 /datum/tgs_http_handler
@@ -304,8 +304,8 @@
  *
  * url - The full URL to execute the GET request for including query parameters.
  */
-/datum/tgs_http_handler/proc/PerformGet(url)
-	CRASH("[type]/PerformGet not implemented!")
+// /datum/tgs_http_handler/proc/PerformGet(url)	//ANC - дубликат
+// 	CRASH("[type]/PerformGet not implemented!")
 
 /// Result of a [/datum/tgs_http_handler] call. MUST NOT be overridden.
 /datum/tgs_http_result
@@ -345,8 +345,8 @@
  * * sender - The [/datum/tgs_chat_user] who issued the command.
  * * params - The trimmed string following the command `/datum/tgs_chat_command/var/name].
  */
-/datum/tgs_chat_command/proc/Run(datum/tgs_chat_user/sender, params)
-	CRASH("[type] has no implementation for Run()")
+// /datum/tgs_chat_command/proc/Run(datum/tgs_chat_user/sender, params)	//ANC - дубликат
+// 	CRASH("[type] has no implementation for Run()")
 
 /// User definable chat message. MUST NOT be overridden.
 /datum/tgs_message_content
@@ -468,21 +468,21 @@
 // API FUNCTIONS
 
 /// Returns the maximum supported [/datum/tgs_version] of the DMAPI.
-/world/proc/TgsMaximumApiVersion()
-	CAN_BE_REDEFINED(TRUE)
-	return
+// /world/proc/TgsMaximumApiVersion()	//ANC - дубликат
+// 	CAN_BE_REDEFINED(TRUE)
+// 	return
 
 /// Returns the minimum supported [/datum/tgs_version] of the DMAPI.
-/world/proc/TgsMinimumApiVersion()
-	CAN_BE_REDEFINED(TRUE)
-	return
+// /world/proc/TgsMinimumApiVersion()	//ANC - дубликат
+// 	CAN_BE_REDEFINED(TRUE)
+// 	return
 
 /**
  * Returns [TRUE] if DreamDaemon was launched under TGS, the API matches, and was properly initialized. [FALSE] will be returned otherwise.
  */
-/world/proc/TgsAvailable()
-	CAN_BE_REDEFINED(TRUE)
-	return
+// /world/proc/TgsAvailable()	//ANC - дубликат
+// 	CAN_BE_REDEFINED(TRUE)
+// 	return
 
 // No function below this succeeds if it TgsAvailable() returns FALSE or if TgsNew() has yet to be called.
 
@@ -492,9 +492,9 @@
  * Unlike del(world) clients will try to reconnect.
  * If TGS has not requested a [TGS_REBOOT_MODE_SHUTDOWN] DreamDaemon will be launched again.
  */
-/world/proc/TgsEndProcess()
-	CAN_BE_REDEFINED(TRUE)
-	return
+// /world/proc/TgsEndProcess()	//ANC - дубликат
+// 	CAN_BE_REDEFINED(TRUE)
+// 	return
 
 /**
  * Send a message to connected chats. This function may sleep!
@@ -503,9 +503,9 @@
  * message - The [/datum/tgs_message_content] to send.
  * admin_only: If [TRUE], message will be sent to admin connected chats. Vice-versa applies.
  */
-/world/proc/TgsTargetedChatBroadcast(datum/tgs_message_content/message, admin_only = FALSE)
-	CAN_BE_REDEFINED(TRUE)
-	return
+// /world/proc/TgsTargetedChatBroadcast(datum/tgs_message_content/message, admin_only = FALSE)	//ANC - дубликат
+// 	CAN_BE_REDEFINED(TRUE)
+// 	return
 
 /**
  * Send a private message to a specific user. This function may sleep!
@@ -514,9 +514,9 @@
  * message - The [/datum/tgs_message_content] to send.
  * user: The [/datum/tgs_chat_user] to PM.
  */
-/world/proc/TgsChatPrivateMessage(datum/tgs_message_content/message, datum/tgs_chat_user/user)
-	CAN_BE_REDEFINED(TRUE)
-	return
+// /world/proc/TgsChatPrivateMessage(datum/tgs_message_content/message, datum/tgs_chat_user/user)	//ANC - дубликат
+// 	CAN_BE_REDEFINED(TRUE)
+// 	return
 
 /**
  * Send a message to connected chats that are flagged as game-related in TGS. This function may sleep!
@@ -525,54 +525,54 @@
  * message - The [/datum/tgs_message_content] to send.
  * channels - Optional list of [/datum/tgs_chat_channel]s to restrict the message to.
  */
-/world/proc/TgsChatBroadcast(datum/tgs_message_content/message, list/channels = null)
-	CAN_BE_REDEFINED(TRUE)
-	return
+// /world/proc/TgsChatBroadcast(datum/tgs_message_content/message, list/channels = null)	//ANC - дубликат
+// 	CAN_BE_REDEFINED(TRUE)
+// 	return
 
 /// Returns the current [/datum/tgs_version] of TGS if it is running the server, null otherwise. This function may sleep if the call to [/world/proc/TgsNew] is sleeping!
-/world/proc/TgsVersion()
-	CAN_BE_REDEFINED(TRUE)
-	return
+// /world/proc/TgsVersion()	//ANC - дубликат
+// 	CAN_BE_REDEFINED(TRUE)
+// 	return
 
 /// Returns the running engine type
-/world/proc/TgsEngine()
-	CAN_BE_REDEFINED(TRUE)
-	return
+// /world/proc/TgsEngine()	//ANC - дубликат
+// 	CAN_BE_REDEFINED(TRUE)
+// 	return
 
 /// Returns the current [/datum/tgs_version] of the DMAPI being used if it was activated, null otherwise. This function may sleep if the call to [/world/proc/TgsNew] is sleeping!
-/world/proc/TgsApiVersion()
-	CAN_BE_REDEFINED(TRUE)
-	return
+// /world/proc/TgsApiVersion()	//ANC - дубликат
+// 	CAN_BE_REDEFINED(TRUE)
+// 	return
 
 /// Returns the name of the TGS instance running the game if TGS is present, null otherwise. This function may sleep if the call to [/world/proc/TgsNew] is sleeping!
-/world/proc/TgsInstanceName()
-	CAN_BE_REDEFINED(TRUE)
-	return
+// /world/proc/TgsInstanceName()	//ANC - дубликат
+// 	CAN_BE_REDEFINED(TRUE)
+// 	return
 
 /// Return the current [/datum/tgs_revision_information] of the running server if TGS is present, null otherwise. This function may sleep if the call to [/world/proc/TgsNew] is sleeping!
-/world/proc/TgsRevision()
-	CAN_BE_REDEFINED(TRUE)
-	return
+// /world/proc/TgsRevision()	//ANC - дубликат
+// 	CAN_BE_REDEFINED(TRUE)
+// 	return
 
 /// Returns the current BYOND security level as a TGS_SECURITY_ define if TGS is present, null otherwise. This function may sleep if the call to [/world/proc/TgsNew] is sleeping!
-/world/proc/TgsSecurityLevel()
-	CAN_BE_REDEFINED(TRUE)
-	return
+// /world/proc/TgsSecurityLevel()	//ANC - дубликат
+// 	CAN_BE_REDEFINED(TRUE)
+// 	return
 
 /// Returns the current BYOND visibility level as a TGS_VISIBILITY_ define if TGS is present, null otherwise. Requires TGS to be using interop API version 5 or higher otherwise the string "___unimplemented" wil be returned. This function may sleep if the call to [/world/proc/TgsNew] is sleeping!
-/world/proc/TgsVisibility()
-	CAN_BE_REDEFINED(TRUE)
-	return
+// /world/proc/TgsVisibility()	//ANC - дубликат
+// 	CAN_BE_REDEFINED(TRUE)
+// 	return
 
 /// Returns a list of active [/datum/tgs_revision_information/test_merge]s if TGS is present, null otherwise. This function may sleep if the call to [/world/proc/TgsNew] is sleeping!
-/world/proc/TgsTestMerges()
-	CAN_BE_REDEFINED(TRUE)
-	return
+// /world/proc/TgsTestMerges()	//ANC - дубликат
+// 	CAN_BE_REDEFINED(TRUE)
+// 	return
 
 /// Returns a list of connected [/datum/tgs_chat_channel]s if TGS is present, null otherwise. This function may sleep if the call to [/world/proc/TgsNew] is sleeping!
-/world/proc/TgsChatChannelInfo()
-	CAN_BE_REDEFINED(TRUE)
-	return
+// /world/proc/TgsChatChannelInfo()	//ANC - дубликат
+// 	CAN_BE_REDEFINED(TRUE)
+// 	return
 
 /**
  * Trigger an event in TGS. Requires TGS version >= 6.3.0. Returns [TRUE] if the event was triggered successfully, [FALSE] otherwise. This function may sleep!
@@ -581,9 +581,9 @@
  * parameters - Optional list of string parameters to pass as arguments to the event script. The first parameter passed to a script will always be the running game's directory followed by these parameters.
  * wait_for_completion - If set, this function will not return until the event has run to completion.
  */
-/world/proc/TgsTriggerEvent(event_name, list/parameters, wait_for_completion = FALSE)
-	CAN_BE_REDEFINED(TRUE)
-	return
+// /world/proc/TgsTriggerEvent(event_name, list/parameters, wait_for_completion = FALSE)	//ANC - дубликат
+// 	CAN_BE_REDEFINED(TRUE)
+// 	return
 
 /*
 The MIT License

@@ -104,20 +104,20 @@
 		if(CALL_CHILDREN)
 			call_children()
 
-/mob/living/simple_animal/hostile/asteroid/elite/broodmother/Life(seconds_per_tick = SSMOBS_DT, times_fired)
-	. = ..()
-	if(!.) //Checks if they are dead as a rock.
-		return
-	if(health >= maxHealth * 0.5 || !COOLDOWN_FINISHED(src, random_tentacle))
-		return
-	COOLDOWN_START(src, random_tentacle, 3 SECONDS)
-	var/tentacle_amount = 5
-	if(health < maxHealth * 0.25)
-		tentacle_amount = 10
-	var/list/possible_turfs = RANGE_TURFS(5, get_turf(src))
-	for(var/i in 1 to tentacle_amount)
-		var/turf/innsmouth = pick_n_take(possible_turfs)
-		new /obj/effect/goliath_tentacle/broodmother(innsmouth, src)
+// /mob/living/simple_animal/hostile/asteroid/elite/broodmother/Life(seconds_per_tick = SSMOBS_DT, times_fired)	// ANC что-то нету жизни тут
+// 	. = ..()
+// 	if(!.) //Checks if they are dead as a rock.
+// 		return
+// 	if(health >= maxHealth * 0.5 || !COOLDOWN_FINISHED(src, random_tentacle))
+// 		return
+// 	COOLDOWN_START(src, random_tentacle, 3 SECONDS)
+// 	var/tentacle_amount = 5
+// 	if(health < maxHealth * 0.25)
+// 		tentacle_amount = 10
+// 	var/list/possible_turfs = RANGE_TURFS(5, get_turf(src))
+// 	for(var/i in 1 to tentacle_amount)
+// 		var/turf/innsmouth = pick_n_take(possible_turfs)
+// 		new /obj/effect/goliath_tentacle/broodmother(innsmouth, src)
 
 /mob/living/simple_animal/hostile/asteroid/elite/broodmother/proc/tentacle_patch(target)
 	ranged_cooldown = world.time + 15

@@ -197,76 +197,76 @@ GLOBAL_REAL(Master, /datum/controller/master)
 
 // Please don't stuff random bullshit here,
 // 	Make a subsystem, give it the SS_NO_FIRE flag, and do your work in it's Initialize()
-/datum/controller/master/Initialize(delay, init_sss, tgs_prime)
-	set waitfor = 0
+// /datum/controller/master/Initialize(delay, init_sss, tgs_prime)	//ANC дубликат
+// 	set waitfor = 0
 
-	if(delay)
-		sleep(delay)
+// 	if(delay)
+// 		sleep(delay)
 
-	if(tgs_prime)
-		world.TgsInitializationComplete()
+// 	if(tgs_prime)
+// 		world.TgsInitializationComplete()
 
-	if(init_sss)
-		init_subtypes(/datum/controller/subsystem, subsystems)
+// 	if(init_sss)
+// 		init_subtypes(/datum/controller/subsystem, subsystems)
 
-	init_stage_completed = 0
-	var/mc_started = FALSE
+// 	init_stage_completed = 0
+// 	var/mc_started = FALSE
 
-	to_chat(world, span_boldannounce("Initializing subsystems..."))
+// 	to_chat(world, span_boldannounce("Initializing subsystems..."))
 
-	var/list/stage_sorted_subsystems = new(INITSTAGE_MAX)
-	for (var/i in 1 to INITSTAGE_MAX)
-		stage_sorted_subsystems[i] = list()
+// 	var/list/stage_sorted_subsystems = new(INITSTAGE_MAX)
+// 	for (var/i in 1 to INITSTAGE_MAX)
+// 		stage_sorted_subsystems[i] = list()
 
-	// Sort subsystems by init_order, so they initialize in the correct order.
-	sortTim(subsystems, /proc/cmp_subsystem_init)
+// 	// Sort subsystems by init_order, so they initialize in the correct order.
+// 	sortTim(subsystems, /proc/cmp_subsystem_init)
 
-	for (var/datum/controller/subsystem/subsystem as anything in subsystems)
-		var/subsystem_init_stage = subsystem.init_stage
-		if (!isnum(subsystem_init_stage) || subsystem_init_stage < 1 || subsystem_init_stage > INITSTAGE_MAX || round(subsystem_init_stage) != subsystem_init_stage)
-			stack_trace("ERROR: MC: subsystem `[subsystem.type]` has invalid init_stage: `[subsystem_init_stage]`. Setting to `[INITSTAGE_MAX]`")
-			subsystem_init_stage = subsystem.init_stage = INITSTAGE_MAX
-		stage_sorted_subsystems[subsystem_init_stage] += subsystem
+// 	for (var/datum/controller/subsystem/subsystem as anything in subsystems)
+// 		var/subsystem_init_stage = subsystem.init_stage
+// 		if (!isnum(subsystem_init_stage) || subsystem_init_stage < 1 || subsystem_init_stage > INITSTAGE_MAX || round(subsystem_init_stage) != subsystem_init_stage)
+// 			stack_trace("ERROR: MC: subsystem `[subsystem.type]` has invalid init_stage: `[subsystem_init_stage]`. Setting to `[INITSTAGE_MAX]`")
+// 			subsystem_init_stage = subsystem.init_stage = INITSTAGE_MAX
+// 		stage_sorted_subsystems[subsystem_init_stage] += subsystem
 
-	// Sort subsystems by display setting for easy access.
-	sortTim(subsystems, /proc/cmp_subsystem_display)
-	var/start_timeofday = REALTIMEOFDAY
-	for (var/current_init_stage in 1 to INITSTAGE_MAX)
+// 	// Sort subsystems by display setting for easy access.
+// 	sortTim(subsystems, /proc/cmp_subsystem_display)
+// 	var/start_timeofday = REALTIMEOFDAY
+// 	for (var/current_init_stage in 1 to INITSTAGE_MAX)
 
-		// Initialize subsystems.
-		for (var/datum/controller/subsystem/subsystem in stage_sorted_subsystems[current_init_stage])
-			if (subsystem.flags & SS_NO_INIT || subsystem.initialized) //Don't init SSs with the correspondig flag or if they already are initialzized
-				continue
-			current_initializing_subsystem = subsystem
-			subsystem.Initialize(REALTIMEOFDAY)
-			CHECK_TICK
-		current_initializing_subsystem = null
-		init_stage_completed = current_init_stage
-		if (!mc_started)
-			mc_started = TRUE
-			if (!current_runlevel)
-				SetRunLevel(1)
-			// Loop.
-			Master.StartProcessing(0)Loop.
-			Master.StartProcessing(0)
+// 		// Initialize subsystems.
+// 		for (var/datum/controller/subsystem/subsystem in stage_sorted_subsystems[current_init_stage])
+// 			if (subsystem.flags & SS_NO_INIT || subsystem.initialized) //Don't init SSs with the correspondig flag or if they already are initialzized
+// 				continue
+// 			current_initializing_subsystem = subsystem
+// 			subsystem.Initialize(REALTIMEOFDAY)
+// 			CHECK_TICK
+// 		current_initializing_subsystem = null
+// 		init_stage_completed = current_init_stage
+// 		if (!mc_started)
+// 			mc_started = TRUE
+// 			if (!current_runlevel)
+// 				SetRunLevel(1)
+// 			// Loop.
+// 			Master.StartProcessing(0)Loop.
+// 			Master.StartProcessing(0)
 
-	var/time = (REALTIMEOFDAY - start_timeofday) / 10
+// 	var/time = (REALTIMEOFDAY - start_timeofday) / 10
 
-	var/msg = "Initializations complete within [time] second[time == 1 ? "" : "s"]!"
-	to_chat(world, span_boldannounce("[msg]"))
-	log_world(msg)
+// 	var/msg = "Initializations complete within [time] second[time == 1 ? "" : "s"]!"
+// 	to_chat(world, span_boldannounce("[msg]"))
+// 	log_world(msg)
 
-	// Set world options.
-	world.change_fps(CONFIG_GET(number/fps))
-	var/initialized_tod = REALTIMEOFDAY
+// 	// Set world options.
+// 	world.change_fps(CONFIG_GET(number/fps))
+// 	var/initialized_tod = REALTIMEOFDAY
 
-	if(sleep_offline_after_initializations)
-		world.sleep_offline = TRUE
-	sleep(1)
+// 	if(sleep_offline_after_initializations)
+// 		world.sleep_offline = TRUE
+// 	sleep(1)
 
-	if(sleep_offline_after_initializations && CONFIG_GET(flag/resume_after_initializations))
-		world.sleep_offline = FALSE
-	initializations_finished_with_no_players_logged_in = initialized_tod < REALTIMEOFDAY - 10
+// 	if(sleep_offline_after_initializations && CONFIG_GET(flag/resume_after_initializations))
+// 		world.sleep_offline = FALSE
+// 	initializations_finished_with_no_players_logged_in = initialized_tod < REALTIMEOFDAY - 10
 
 
 /datum/controller/master/proc/SetRunLevel(new_runlevel)

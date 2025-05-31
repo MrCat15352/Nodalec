@@ -5,7 +5,7 @@
 #define MAX_GLIDE_SIZE 32
 
 /// Compensating for time dialation
-GLOBAL_VAR_INIT(glide_size_multiplier, 1.0)
+// GLOBAL_VAR_INIT(glide_size_multiplier, 1.0)	//ANC - дубликат
 
 ///Broken down, here's what this does:
 /// divides the world icon_size (32) by delay divided by ticklag to get the number of pixels something should be moving each tick.

@@ -42,4 +42,4 @@
 #define MOD_WORN_ICON_OVERRIDE "mod_worn_icon_override"
 
 /// Global list of all /datum/mod_theme
-GLOBAL_LIST_INIT(mod_themes, setup_mod_themes())
+// GLOBAL_LIST_INIT(mod_themes, setup_mod_themes())	//ANC - дубликат

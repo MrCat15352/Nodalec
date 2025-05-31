@@ -257,49 +257,49 @@ GLOBAL_DATUM_INIT(ahelp_tickets, /datum/admin_help_tickets, new)
 		send_message_to_tgs(msg, urgent)
 	GLOB.ahelp_tickets.active_tickets += src
 
-/datum/admin_help/proc/format_embed_discord(message)
-	var/datum/discord_embed/embed = new()
-	embed.title = "Ticket #[id]"
-	embed.description = "<byond://[world.internet_address]:[world.port]>"
-	embed.author = key_name(initiator_ckey)
-	var/round_state
-	switch(SSticker.current_state)
-		if(GAME_STATE_STARTUP, GAME_STATE_PREGAME, GAME_STATE_SETTING_UP)
-			round_state = "Round has not started"
-		if(GAME_STATE_PLAYING)
-			round_state = "Round is ongoing."
-			if(SSshuttle.emergency.getModeStr())
-				round_state += "\n[SSshuttle.emergency.getModeStr()]: [SSshuttle.emergency.getTimerStr()]"
-				if(SSticker.emergency_reason)
-					round_state += ", Shuttle call reason: [SSticker.emergency_reason]"
-		if(GAME_STATE_FINISHED)
-			round_state = "Round has ended"
-	var/list/admin_counts = get_admin_counts(R_BAN)
-	var/stealth_admins = jointext(admin_counts["stealth"], ", ")
-	var/afk_admins = jointext(admin_counts["afk"], ", ")
-	var/other_admins = jointext(admin_counts["noflags"], ", ")
-	var/admin_text = ""
-	var/player_count = "**Total**: [length(GLOB.clients)], **Living**: [length(GLOB.alive_player_list)], **Dead**: [length(GLOB.dead_player_list)], **Observers**: [length(GLOB.current_observers_list)]"
-	if(stealth_admins)
-		admin_text += "**Stealthed**: [stealth_admins]\n"
-	if(afk_admins)
-		admin_text += "**AFK**: [afk_admins]\n"
-	if(other_admins)
-		admin_text += "**Lacks +BAN**: [other_admins]\n"
-	embed.fields = list(
-		"CKEY" = initiator_ckey,
-		"PLAYERS" = player_count,
-		"ROUND STATE" = round_state,
-		"ROUND ID" = GLOB.round_id,
-		"ROUND TIME" = ROUND_TIME(),
-		"MESSAGE" = message,
-		"ADMINS" = admin_text,
-	)
-	if(CONFIG_GET(string/adminhelp_ahelp_link))
-		var/ahelp_link = replacetext(CONFIG_GET(string/adminhelp_ahelp_link), "$RID", GLOB.round_id)
-		ahelp_link = replacetext(ahelp_link, "$TID", id)
-		embed.url = ahelp_link
-	return embed
+// /datum/admin_help/proc/format_embed_discord(message)// ANC Это надо чинить
+// 	var/datum/discord_embed/embed = new()
+// 	embed.title = "Ticket #[id]"
+// 	embed.description = "<byond://[world.internet_address]:[world.port]>"
+// 	embed.author = key_name(initiator_ckey)
+// 	var/round_state
+// 	switch(SSticker.current_state)
+// 		if(GAME_STATE_STARTUP, GAME_STATE_PREGAME, GAME_STATE_SETTING_UP)
+// 			round_state = "Round has not started"
+// 		if(GAME_STATE_PLAYING)
+// 			round_state = "Round is ongoing."
+// 			if(SSshuttle.emergency.getModeStr())
+// 				round_state += "\n[SSshuttle.emergency.getModeStr()]: [SSshuttle.emergency.getTimerStr()]"
+// 				if(SSticker.emergency_reason)
+// 					round_state += ", Shuttle call reason: [SSticker.emergency_reason]"
+// 		if(GAME_STATE_FINISHED)
+// 			round_state = "Round has ended"
+// 	var/list/admin_counts = get_admin_counts(R_BAN)
+// 	var/stealth_admins = jointext(admin_counts["stealth"], ", ")
+// 	var/afk_admins = jointext(admin_counts["afk"], ", ")
+// 	var/other_admins = jointext(admin_counts["noflags"], ", ")
+// 	var/admin_text = ""
+// 	var/player_count = "**Total**: [length(GLOB.clients)], **Living**: [length(GLOB.alive_player_list)], **Dead**: [length(GLOB.dead_player_list)], **Observers**: [length(GLOB.current_observers_list)]"
+// 	if(stealth_admins)
+// 		admin_text += "**Stealthed**: [stealth_admins]\n"
+// 	if(afk_admins)
+// 		admin_text += "**AFK**: [afk_admins]\n"
+// 	if(other_admins)
+// 		admin_text += "**Lacks +BAN**: [other_admins]\n"
+// 	embed.fields = list(
+// 		"CKEY" = initiator_ckey,
+// 		"PLAYERS" = player_count,
+// 		"ROUND STATE" = round_state,
+// 		"ROUND ID" = GLOB.round_id,
+// 		// "ROUND TIME" = ROUND_TIME(),
+// 		"MESSAGE" = message,
+// 		"ADMINS" = admin_text,
+// 	)// ANC Это надо чинить
+// 	if(CONFIG_GET(string/adminhelp_ahelp_link))
+// 		var/ahelp_link = replacetext(CONFIG_GET(string/adminhelp_ahelp_link), "$RID", GLOB.round_id)
+// 		ahelp_link = replacetext(ahelp_link, "$TID", id)
+// 		embed.url = ahelp_link
+// 	return embed
 
 /datum/admin_help/proc/send_message_to_tgs(message, urgent = FALSE)
 	var/message_to_send = message
@@ -307,7 +307,8 @@ GLOBAL_DATUM_INIT(ahelp_tickets, /datum/admin_help_tickets, new)
 	if(urgent)
 		var/extra_message = CONFIG_GET(string/urgent_ahelp_message)
 		to_chat(initiator, span_boldwarning("Notified admins to prioritize your ticket"))
-		var/datum/discord_embed/embed = format_embed_discord(message)
+		// var/datum/discord_embed/embed = format_embed_discord(message)	//ANC
+		var/datum/discord_embed/embed = message
 		embed.content = extra_message
 		embed.footer = "This player requested an admin"
 		send2adminchat_webhook(embed, urgent = TRUE)
@@ -321,7 +322,8 @@ GLOBAL_DATUM_INIT(ahelp_tickets, /datum/admin_help_tickets, new)
 		var/regular_webhook_url = CONFIG_GET(string/regular_adminhelp_webhook_url)
 		if(regular_webhook_url && (!urgent || regular_webhook_url != CONFIG_GET(string/urgent_adminhelp_webhook_url)))
 			var/extra_message = CONFIG_GET(string/ahelp_message)
-			var/datum/discord_embed/embed = format_embed_discord(message)
+			// var/datum/discord_embed/embed = format_embed_discord(message)	//ANC
+			var/datum/discord_embed/embed = message
 			embed.content = extra_message
 			embed.footer = "This player sent an ahelp when no admins are available [urgent? "and also requested an admin": ""]"
 			send2adminchat_webhook(embed, urgent = FALSE)

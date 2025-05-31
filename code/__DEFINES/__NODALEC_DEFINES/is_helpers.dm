@@ -13,13 +13,13 @@
 //Turfs
 //#define isturf(A) (istype(A, /turf)) This is actually a byond built-in. Added here for completeness sake.
 
-GLOBAL_LIST_INIT(turfs_without_ground, typecacheof(list(
-	/turf/open/space,
-	/turf/open/chasm,
-	/turf/open/lava,
-	/turf/open/water,
-	/turf/open/openspace
-	)))
+// GLOBAL_LIST_INIT(turfs_without_ground, typecacheof(list(	//ANC - дубликат
+// 	/turf/open/space,
+// 	/turf/open/chasm,
+// 	/turf/open/lava,
+// 	/turf/open/water,
+// 	/turf/open/openspace
+// 	)))
 
 #define isgroundlessturf(A) (is_type_in_typecache(A, GLOB.turfs_without_ground))
 
@@ -74,7 +74,7 @@ GLOBAL_LIST_INIT(turfs_without_ground, typecacheof(list(
 #define iszombie(A) (is_species(A, /datum/species/zombie))
 #define isskeleton(A) (is_species(A, /datum/species/skeleton))
 #define ismoth(A) (is_species(A, /datum/species/moth))
-#define ishumanbasic(A) (is_species(A, /datum/species/human))
+// #define ishumanbasic(A) (is_species(A, /datum/species/human))
 #define iselzuose(A) (is_species(A, /datum/species/elzuose))
 #define isvampire(A) (is_species(A,/datum/species/vampire))
 #define isdullahan(A) (is_species(A, /datum/species/dullahan))
@@ -212,13 +212,13 @@ GLOBAL_LIST_INIT(pointed_types, typecacheof(list(
 
 #define issignaler(O) (istype(O, /obj/item/assembly/signaler))
 
-GLOBAL_LIST_INIT(glass_sheet_types, typecacheof(list(
-	/obj/item/stack/sheet/glass,
-	/obj/item/stack/sheet/rglass,
-	/obj/item/stack/sheet/plasmaglass,
-	/obj/item/stack/sheet/plasmarglass,
-	/obj/item/stack/sheet/titaniumglass,
-	/obj/item/stack/sheet/plastitaniumglass)))
+// GLOBAL_LIST_INIT(glass_sheet_types, typecacheof(list(	//ANC - дубликат
+// 	/obj/item/stack/sheet/glass,
+// 	/obj/item/stack/sheet/rglass,
+// 	/obj/item/stack/sheet/plasmaglass,
+// 	/obj/item/stack/sheet/plasmarglass,
+// 	/obj/item/stack/sheet/titaniumglass,
+// 	/obj/item/stack/sheet/plastitaniumglass)))
 
 #define is_glass_sheet(O) (is_type_in_typecache(O, GLOB.glass_sheet_types))
 
@@ -230,10 +230,10 @@ GLOBAL_LIST_INIT(glass_sheet_types, typecacheof(list(
 
 #define isbook(O) (is_type_in_typecache(O, GLOB.book_types))
 
-GLOBAL_LIST_INIT(book_types, typecacheof(list(
-	/obj/item/book,
-	/obj/item/spellbook,
-	/obj/item/storage/book)))
+// GLOBAL_LIST_INIT(book_types, typecacheof(list(	//ANC - дубликат
+// 	/obj/item/book,
+// 	/obj/item/spellbook,
+// 	/obj/item/storage/book)))
 
 // [CELADON-ADD] - CELADON_RETURN_CONTENT_CLOWNS
 #define isclown(A) (istype(A, /mob/living/simple_animal/hostile/retaliate/clown))

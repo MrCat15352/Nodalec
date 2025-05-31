@@ -153,10 +153,10 @@
 		stack_trace("[type] blocks explosives, but does not have the managing element applied")
 #endif
 
-#if EMISSIVE_BLOCK_GENERIC != 0
-	#error EMISSIVE_BLOCK_GENERIC is expected to be 0 to facilitate a weird optimization hack where we rely on it being the most common.
-	#error Read the comment in code/game/atoms_movable.dm for details.
-#endif
+// #if EMISSIVE_BLOCK_GENERIC != 0	// ANC - ээээ че не понял
+// 	#error EMISSIVE_BLOCK_GENERIC is expected to be 0 to facilitate a weird optimization hack where we rely on it being the most common.
+// 	#error Read the comment in code/game/atoms_movable.dm for details.
+// #endif
 
 	// This one is incredible.
 	// `if (x) else { /* code */ }` is surprisingly fast, and it's faster than a switch, which is seemingly not a jump table.

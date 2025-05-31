@@ -46,7 +46,7 @@
 #endif
 
 /// Gets the version of rust_g
-/proc/rustg_get_version() return RUSTG_CALL(RUST_G, "get_version")()
+// /proc/rustg_get_version() return RUSTG_CALL(RUST_G, "get_version")()	//ANC - дубликат
 
 
 /**
@@ -149,7 +149,7 @@
 #define rustg_json_is_valid(text) (RUSTG_CALL(RUST_G, "json_is_valid")(text) == "true")
 
 #define rustg_log_write(fname, text, format) RUSTG_CALL(RUST_G, "log_write")(fname, text, format)
-/proc/rustg_log_close_all() return RUSTG_CALL(RUST_G, "log_close_all")()
+// /proc/rustg_log_close_all() return RUSTG_CALL(RUST_G, "log_close_all")()	//ANC - дубликат
 
 #define rustg_noise_get_at_coordinates(seed, x, y) RUSTG_CALL(RUST_G, "noise_get_at_coordinates")(seed, x, y)
 
@@ -165,26 +165,26 @@
 #define rustg_time_reset(id) RUSTG_CALL(RUST_G, "time_reset")(id)
 
 /// Returns the timestamp as a string
-/proc/rustg_unix_timestamp()
-	return RUSTG_CALL(RUST_G, "unix_timestamp")()
+// /proc/rustg_unix_timestamp()	//ANC - дубликат
+// 	return RUSTG_CALL(RUST_G, "unix_timestamp")()
 
 #define rustg_raw_read_toml_file(path) json_decode(RUSTG_CALL(RUST_G, "toml_file_to_json")(path) || "null")
 
-/proc/rustg_read_toml_file(path)
-	var/list/output = rustg_raw_read_toml_file(path)
-	if (output["success"])
-		return json_decode(output["content"])
-	else
-		CRASH(output["content"])
+// /proc/rustg_read_toml_file(path)	//ANC - дубликат
+// 	var/list/output = rustg_raw_read_toml_file(path)
+// 	if (output["success"])
+// 		return json_decode(output["content"])
+// 	else
+// 		CRASH(output["content"])
 
 #define rustg_raw_toml_encode(value) json_decode(RUSTG_CALL(RUST_G, "toml_encode")(json_encode(value)))
 
-/proc/rustg_toml_encode(value)
-	var/list/output = rustg_raw_toml_encode(value)
-	if (output["success"])
-		return output["content"]
-	else
-		CRASH(output["content"])
+// /proc/rustg_toml_encode(value)	//ANC - дубликат
+// 	var/list/output = rustg_raw_toml_encode(value)
+// 	if (output["success"])
+// 		return output["content"]
+// 	else
+// 		CRASH(output["content"])
 
 #define rustg_url_encode(text) RUSTG_CALL(RUST_G, "url_encode")("[text]")
 #define rustg_url_decode(text) RUSTG_CALL(RUST_G, "url_decode")(text)

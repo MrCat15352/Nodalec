@@ -3,51 +3,51 @@
 //Damage and status effect defines
 
 /// Physical fracturing and warping of the material.
-#define BRUTE "brute"
-/// Scorching and charring of the material.
-#define BURN "fire"
-/// Poisoning. Mostly caused by reagents.
-#define TOX "toxin"
-/// Suffocation.
-#define OXY "oxygen"
-#define CLONE "clone"
-/// Exhaustion and nonlethal damage.
-#define STAMINA "stamina"
-/// Brain damage. Should probably be decommissioned and replaced with proper organ damage.
-#define BRAIN "brain"
+// #define BRUTE "brute"
+// /// Scorching and charring of the material.
+// #define BURN "fire"
+// /// Poisoning. Mostly caused by reagents.
+// #define TOX "toxin"
+// /// Suffocation.
+// #define OXY "oxygen"
+// #define CLONE "clone"
+// /// Exhaustion and nonlethal damage.
+// #define STAMINA "stamina"
+// /// Brain damage. Should probably be decommissioned and replaced with proper organ damage.
+// #define BRAIN "brain"
 
 
-//Damage flag defines //
+// //Damage flag defines //
 
-/// Involves corrosive substances.
-#define ACID "acid"
-/// Involved in checking whether a disease can infect or spread. Also involved in xeno neurotoxin.
-#define BIO "bio"
-/// Involves a shockwave, usually from an explosion.
-#define BOMB "bomb"
-/// Involves a solid projectile.
-#define BULLET "bullet"
-/// Involves being eaten
-#define CONSUME "consume"
-/// Involves an EMP or energy-based projectile.
-#define ENERGY "energy"
-/// Involves fire or temperature extremes.
-#define FIRE "fire"
-/// Involves a laser.
-#define LASER "laser"
-/// Involves a melee attack or a thrown object.
-#define MELEE "melee"
-//someone should really port wounds...
-/// Involved in checking the likelihood of applying a wound to a mob.
-//#define WOUND "wound"
+// /// Involves corrosive substances.
+// #define ACID "acid"
+// /// Involved in checking whether a disease can infect or spread. Also involved in xeno neurotoxin.
+// #define BIO "bio"
+// /// Involves a shockwave, usually from an explosion.
+// #define BOMB "bomb"
+// /// Involves a solid projectile.
+// #define BULLET "bullet"
+// /// Involves being eaten
+// #define CONSUME "consume"
+// /// Involves an EMP or energy-based projectile.
+// #define ENERGY "energy"
+// /// Involves fire or temperature extremes.
+// #define FIRE "fire"
+// /// Involves a laser.
+// #define LASER "laser"
+// /// Involves a melee attack or a thrown object.
+// #define MELEE "melee"
+// //someone should really port wounds...
+// /// Involved in checking the likelihood of applying a wound to a mob.
+// //#define WOUND "wound"
 
-#define ARMOR_ALL "all_damage_types"
+// #define ARMOR_ALL "all_damage_types"
 
-#define EFFECT_STUN "stun"
-#define EFFECT_KNOCKDOWN "knockdown"
-#define EFFECT_UNCONSCIOUS "unconscious"
-#define EFFECT_PARALYZE "paralyze"
-#define EFFECT_IMMOBILIZE "immobilize"
+// #define EFFECT_STUN "stun"
+// #define EFFECT_KNOCKDOWN "knockdown"
+// #define EFFECT_UNCONSCIOUS "unconscious"
+// #define EFFECT_PARALYZE "paralyze"
+// #define EFFECT_IMMOBILIZE "immobilize"
 #define EFFECT_IRRADIATE "irradiate"
 #define EFFECT_STUTTER "stutter"
 #define EFFECT_SLUR "slur"
@@ -56,57 +56,57 @@
 #define EFFECT_JITTER "jitter"
 
 //Bitflags defining which status effects could be or are inflicted on a mob
-#define CANSTUN (1<<0)
-#define CANKNOCKDOWN (1<<1)
-#define CANUNCONSCIOUS (1<<2)
-#define CANPUSH (1<<3)
+// #define CANSTUN (1<<0)
+// #define CANKNOCKDOWN (1<<1)
+// #define CANUNCONSCIOUS (1<<2)
+// #define CANPUSH (1<<3)
 #define GODMODE (1<<4)
 
 //Health Defines
-#define HEALTH_THRESHOLD_CRIT 0
-#define HEALTH_THRESHOLD_FULLCRIT -30
-#define HEALTH_THRESHOLD_DEAD -100
+// #define HEALTH_THRESHOLD_CRIT 0
+// #define HEALTH_THRESHOLD_FULLCRIT -30
+// #define HEALTH_THRESHOLD_DEAD -100
 
-#define HEALTH_THRESHOLD_NEARDEATH -90 //Not used mechanically, but to determine if someone is so close to death they hear the other side
+// #define HEALTH_THRESHOLD_NEARDEATH -90 //Not used mechanically, but to determine if someone is so close to death they hear the other side
 
 //Actual combat defines
 
 //click cooldowns, in tenths of a second, used for various combat actions
 #define HEAVY_WEAPON_CD 10
-#define CLICK_CD_MELEE 8
+// #define CLICK_CD_MELEE 8
 #define LIGHT_WEAPON_CD 6
-#define CLICK_CD_RANGE 4
-#define CLICK_CD_RAPID 2
-#define CLICK_CD_CLICK_ABILITY 6
-#define CLICK_CD_BREAKOUT 100
-#define CLICK_CD_HANDCUFFED 10
-#define CLICK_CD_RESIST 20
-#define CLICK_CD_GRABBING 10
-#define CLICK_CD_LOOK_UP 5
+// #define CLICK_CD_RANGE 4
+// #define CLICK_CD_RAPID 2
+// #define CLICK_CD_CLICK_ABILITY 6
+// #define CLICK_CD_BREAKOUT 100
+// #define CLICK_CD_HANDCUFFED 10
+// #define CLICK_CD_RESIST 20
+// #define CLICK_CD_GRABBING 10
+// #define CLICK_CD_LOOK_UP 5
 
 //Cuff resist speeds
-#define FAST_CUFFBREAK 1
-#define INSTANT_CUFFBREAK 2
+// #define FAST_CUFFBREAK 1
+// #define INSTANT_CUFFBREAK 2
 
 //Grab levels
-#define GRAB_PASSIVE 0
-#define GRAB_AGGRESSIVE 1
-#define GRAB_NECK 2
-#define GRAB_KILL 3
+// #define GRAB_PASSIVE 0
+// #define GRAB_AGGRESSIVE 1
+// #define GRAB_NECK 2
+// #define GRAB_KILL 3
 
 //Grab breakout odds
-#define BASE_GRAB_RESIST_CHANCE 30
+// #define BASE_GRAB_RESIST_CHANCE 30
 
-//slowdown when in softcrit. Note that crawling slowdown will also apply at the same time!
-#define SOFTCRIT_ADD_SLOWDOWN 2
-//slowdown when crawling
-#define CRAWLING_ADD_SLOWDOWN 4
+// //slowdown when in softcrit. Note that crawling slowdown will also apply at the same time!
+// #define SOFTCRIT_ADD_SLOWDOWN 2
+// //slowdown when crawling
+// #define CRAWLING_ADD_SLOWDOWN 4
 
-//Attack types for checking shields/hit reactions
-#define MELEE_ATTACK 1
-#define UNARMED_ATTACK 2
-#define PROJECTILE_ATTACK 3
-#define THROWN_PROJECTILE_ATTACK 4
+// //Attack types for checking shields/hit reactions
+// #define MELEE_ATTACK 1
+// #define UNARMED_ATTACK 2
+// #define PROJECTILE_ATTACK 3
+// #define THROWN_PROJECTILE_ATTACK 4
 #define LEAP_ATTACK 5
 #define ALL_ATTACK_TYPES list(MELEE_ATTACK, UNARMED_ATTACK, PROJECTILE_ATTACK, THROWN_PROJECTILE_ATTACK, LEAP_ATTACK)
 #define NON_PROJECTILE_ATTACKS list(MELEE_ATTACK, UNARMED_ATTACK, LEAP_ATTACK)
@@ -147,7 +147,7 @@
 #define SHOVE_SLOWDOWN_LENGTH 30
 #define SHOVE_SLOWDOWN_STRENGTH 0.85 //multiplier
 //Shove disarming item list
-GLOBAL_LIST_INIT(shove_disarming_types, typecacheof(list(/obj/item/gun)))
+// GLOBAL_LIST_INIT(shove_disarming_types, typecacheof(list(/obj/item/gun)))
 //Combat object defines
 //Embedded objects
 #define EMBEDDED_PAIN_CHANCE 15	//Chance for embedded objects to cause pain (damage user)
