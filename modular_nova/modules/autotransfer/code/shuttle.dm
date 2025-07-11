@@ -1,5 +1,5 @@
-/datum/controller/subsystem/shuttle
-	var/endvote_passed = FALSE
+// /datum/controller/subsystem/shuttle
+// 	var/endvote_passed = FALSE
 
 
 // /datum/controller/subsystem/shuttle/proc/autoEnd()
