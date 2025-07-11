@@ -8861,7 +8861,6 @@
 #include "modular_nova\modules\xenoarchartifacts\obj\geosample.dm"
 #include "modular_nova\modules\xenoarchartifacts\obj\particle_battery.dm"
 #include "modular_nova\modules\xenoarchartifacts\obj\wave_scanner.dm"
-<<<<<<< HEAD
 #include "nodalec\_DEFINES\flags.dm"
 #include "nodalec\_DEFINES\keybindings.dm"
 #include "nodalec\_DEFINES\maps.dm"
@@ -9044,8 +9043,6 @@
 #include "nodalec\turfs\open\floor\plating\asteroid.dm"
 #include "nodalec\turfs\open\floor\plating\misc_plating.dm"
 #include "nodalec\turfs\open\floor\plating\planet.dm"
-=======
->>>>>>> 6245c101c (аванпост(чтоб посмотрели) (#21))
 // END_INCLUDE
 
 // NODALEC
